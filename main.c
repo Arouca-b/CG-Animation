@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int R = 0, G=0, B = 0;
+int R = 158, G=0, B = 0;
 float horizontal = 0, vertical = 0;
 
 void display(void);
@@ -325,7 +325,7 @@ void Sol(){
 
 void Helicoptero(){
   glBegin(GL_POLYGON);
-    glColor3ub (180, 20, 25);
+    glColor3ub (R, G, B);
     glVertex2f(-5.832928370436 + horizontal, 9.0401452436051 + vertical);
     glVertex2f(-5.8115850100531 + horizontal, 9.8085062173898 + vertical);
     glVertex2f(-5.9752174396554 + horizontal, 10.5128371100258 + vertical);
@@ -367,7 +367,7 @@ void Helicoptero(){
   glEnd();
 
   glBegin(GL_POLYGON);
-    glColor3ub (R, G, B);
+    glColor3ub (0, 0, 0);
     glVertex2f(-8.0825586214218 + horizontal, 11.6568895226439 + vertical);
     glVertex2f(-8.0825853112324 + horizontal, 9.6138166626064 + vertical);
     glVertex2f(-8.0705656727889 + horizontal, 9.5906359313225 + vertical);
@@ -572,11 +572,15 @@ void keyboard(unsigned char key, int x, int y){
 
 void Special_keyboard(GLint tecla, int x, int y) {
   switch (tecla) { // GLUT_KEY_RIGHT GLUT_KEY_DOWN GLUT_KEY_PAGE_UP GLUT_KEY_PAGE_DOWN GLUT_KEY_F1...
-    case GLUT_KEY_F12: R = 0; G = 200; B = 200;
+    case GLUT_KEY_F12: R = 137; G = 0; B = 206;
         glutPostRedisplay();
         break;
+
+    case GLUT_KEY_F11: R = 158; G = 0; B = 0;
+      glutPostRedisplay();
+      break;
     
-    case GLUT_KEY_F10: R = 0; G = 100; B = 200;
+    case GLUT_KEY_F10: R = 109; G = 67; B = 0;
       glutPostRedisplay();
       break;
 
