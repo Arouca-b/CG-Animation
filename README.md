@@ -5,10 +5,12 @@ Atualizar link sempre que alterar imagem
 
 ### Método de execução
 ``` powerShell
-gcc <nomearquivo.c> -o nome_saída –lglut –lGL –lGLU –
-lm
+gcc <nomearquivo.c> -o nome_saída –lglut –lGL –lGLU –lm
 ```
 
 ### Imagem animação
 * 05/10/24 
 ![alt text](/imagens/image.png)
+
+* 05/10/24 
+![alt text](/imagens/image2.png)
