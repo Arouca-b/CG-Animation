@@ -1,6 +1,7 @@
 #include <GL/glut.h> //O arquivo glut.h inclui, além dos protótipos das funções GLUT, os arquivos gl.h e glu.h,
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 int R = 158, G=0, B = 0;
 float horizontal = 0, vertical = 0;
@@ -15,6 +16,12 @@ void Helicoptero();
 void Areia();
 void Sol();
 void Barco();
+void nuvens();
+void nuvemModel1(float posx, float posy);
+void nuvemModel2(float posx, float posy);
+void nuvemModel3(float posx, float posy);
+
+void Circulo(float raio, float x, float y, float angulo);
 
 int main(int argc, char** argv){
   glutInit(&argc, argv); //Estabelece contato com sistema de janelas
@@ -51,14 +58,28 @@ void display(void) {
       glColor3ub(200, 250, 255);
       glVertex2f(15, 0);
     glEnd();
-
   Sol();
+  nuvens();
   Mar();
   Areia();
   Barco();
   Helicoptero();
   Coqueiros();
   glFlush(); // Executa os comandos OpenGL para renderização
+}
+
+void Circulo(float raio, float x0, float y0, float angulo){
+  float radiano = 360/30 * (2 * 3.14159265 / 360);
+  float passo = radiano;
+  float x = 0, y = 0;
+  glBegin(GL_POLYGON);
+    for(int i = 0; i < 30; i++){
+      x = x0 + cos(passo) * raio;
+      y = y0 + sin(passo) * raio;
+      passo += radiano;
+      glVertex2f(x, y);
+    }
+  glEnd();
 }
 
 void Barco(){
@@ -91,18 +112,12 @@ void Barco(){
 
   glBegin(GL_POLYGON);
     glColor3ub(179, 232, 255);
-    glVertex2d(-9.1070857795995, -1.6995707317397);
-    glVertex2d(-9.0857716354287, -2.2643955371001);
-    glVertex2d(-8.4889755986457, -2.2004531063046);
-    glVertex2d(-8.5316038869873, -1.6462853727434);
+    Circulo(0.35, -8.798030689, -1.955340455, 360);
   glEnd();
 
   glBegin(GL_POLYGON);
     glColor3ub(179, 232, 255);
-    glVertex2d(-6.7731869928945, -1.4544580803569);
-    glVertex2d(-6.2083621723678, -1.4118297931598);
-    glVertex2d(-6.1977051002824, -1.9340263113233);
-    glVertex2d(-6.7518728487237, -1.9873116703195);
+    Circulo(0.35, -6.485446047, -1.699570732, 360);
   glEnd();
 
   glBegin(GL_POLYGON);
@@ -152,9 +167,17 @@ void Coqueiros(){
     glVertex2f(11.2103487419862, -7.4334604933207);
   glEnd();
 
+  //coco
+  glBegin(GL_POLYGON);
+  glColor3ub(64, 171, 81);
+    Circulo(0.5, 11, -6.8, 360);
+    Circulo(0.5, 12, -6.8, 360);
+    Circulo(0.5, 11.5, -7.2, 360);
+  glEnd();
+
   //folhagem
   glBegin(GL_POLYGON);
-    glColor3ub(64, 171, 81);
+    glColor3ub(50, 130, 20);
     glVertex2f(10.9665732022438, -6.2274131185577);
     glVertex2f(10.2737374577125, -6.5353401078589);
     glVertex2f(9.606562296312, -7.292327289891);
@@ -265,9 +288,57 @@ void Coqueiros(){
   glEnd();
 }
 
+void nuvemModel1(float posx, float posy){
+  glBegin(GL_POLYGON);
+    glColor3ub(255, 255, 255);
+    Circulo(1.2, -6.6 + posx, 12.5 - posy, 360);
+    Circulo(1.2, -5.7 + posx, 13.5 - posy, 360);
+    Circulo(1.2, -4.9 + posx, 12.5 - posy, 360);
+    Circulo(1.2, -4.0 + posx, 13.5 - posy, 360);
+    Circulo(1.2, -3.2 + posx, 12.5 - posy, 360);
+  glEnd();
+}
+
+void nuvemModel2(float posx, float posy){
+  glBegin(GL_POLYGON);
+    glColor3ub(255, 255, 255);
+    Circulo(.7, -10 + posx, 3.5 + posy, 360);
+    Circulo(.7, -11.5 + posx, 4 + posy, 360);
+    Circulo(.7, -12 + posx, 3.5 + posy, 360);
+    Circulo(.7, -10.5 + posx, 4 + posy, 360);
+    Circulo(.7, -11 + posx, 3.5 + posy, 360);
+  glEnd();
+}
+
+void nuvemModel3(float posx, float posy){
+  glBegin(GL_POLYGON);
+    glColor3ub(255, 255, 255);
+    Circulo(.3, 12.3 + posx, 2.3 + posy, 360);
+    Circulo(.2, 12.45 + posx, 2.6 + posy, 360);
+    Circulo(.3, 12.6 + posx, 2.3 + posy, 360);
+    Circulo(.2, 12.75 + posx, 2.6 + posy, 360);
+    Circulo(.3, 13 + posx, 2.3 + posy, 360);
+  glEnd();
+}
+
+
+void nuvens(){
+  nuvemModel1(0, 0);
+  nuvemModel2(0, 0);
+  nuvemModel3(0, 0);
+  nuvemModel1(5, 3);
+  nuvemModel2(5, 1);
+  nuvemModel3(-5, -1);
+  nuvemModel3(-10, 3);
+}
+
+void movimento_nuvens(){
+  
+}
+
 void Areia(){
   glBegin(GL_POLYGON);
-    glColor3ub (238, 224, 199);
+    glColor3ub (206, 193, 174);
     glVertex2f(-17.1398512151135, -15.0429933771048);
     glVertex2f(-15.0031819671612, -13.7295215413454);
     glVertex2f(-14.3903388495315, -13.2491850566414);
@@ -326,36 +397,13 @@ void Mar(){
     glVertex2f(-15.0, 0);
     glVertex2f(15, 0);
     glVertex2f(15, -15);
-    glVertex2f(0, -15);
   glEnd();
 }
 
 void Sol(){
   glBegin(GL_POLYGON);
     glColor3ub (200, 200, 0);
-    glVertex2f(-5.0825586214218, 0);
-    glVertex2f(-5.117976244464, 0.7645673990468);
-    glVertex2f(-5.1471847806776, 1.4609660475186);
-    glVertex2f(-5.0786406888882, 2.260647118394);
-    glVertex2f(-4.8501603829239, 3.197416372848);
-    glVertex2f(-4.4617438627844, 3.9285533519341);
-    glVertex2f(-3.9133911284698, 4.7967785145988);
-    glVertex2f(-3.1594061187873, 5.5050674630884);
-    glVertex2f(-2.4054211091048, 5.7792438302457);
-    glVertex2f(-1.5371959464401, 6.0762682279994);
-    glVertex2f(-0.7390719464804, 6.2670820733407);
-    glVertex2f(-0.0792051085438, 6.3358182022924);
-    glVertex2f(0.6493978583444, 6.2945765249214);
-    glVertex2f(1.5567147605071, 6.2120931701793);
-    glVertex2f(2.2990649531857, 5.9096542027917);
-    glVertex2f(2.9864262427029, 5.4559957517104);
-    glVertex2f(3.7185241475, 4.7838371570815);
-    glVertex2f(4.4056312724334, 3.9782632864699);
-    glVertex2f(4.7323239180766, 3.2151979478843);
-    glVertex2f(4.9110378533511, 2.2803865941408);
-    glVertex2f(4.9930131046909, 1.5512369477127);
-    glVertex2f(4.9660267565125, 0.7956862087836);
-    glVertex2f(4.8486866771206, 0.0);
+    Circulo(6, 0, 1, 180);
   glEnd();
 }
 
@@ -600,7 +648,7 @@ void keyboard(unsigned char key, int x, int y){
 	printf(">>> Tecla pressionada: %c\n",key);
   switch (key) {
     case 27: exit(0);
-    case 32: R = 0; G = 0; B = 0;
+    case 32:
             glutPostRedisplay();
     break;
   }

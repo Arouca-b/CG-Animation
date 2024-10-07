@@ -14,3 +14,6 @@ gcc <nomearquivo.c> -o nome_saída –lglut –lGL –lGLU –lm
 
 * 05/10/24 
 ![alt text](/imagens/image2.png)
+
+* 07/10/24 
+![alt text](/imagens/image2.png)
