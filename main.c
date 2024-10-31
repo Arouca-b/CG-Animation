@@ -4,8 +4,7 @@
 #include <math.h>
 #include <stdbool.h>
 
-int R = 158, G=0, B = 0;
-float horizontal = 0, vertical = 0;
+float horizontal = 0, vertical = 0, escalar=1;
 
 void display(void);
 void keyboard(unsigned char key, int x, int y);
@@ -13,6 +12,7 @@ void Special_keyboard(GLint tecla, int x, int y);
 void DesenhaTexto(char *string);
 void Coqueiros(int pos);
 void Mar();
+void helice(int bol, int angle);
 void Helicoptero();
 void Areia();
 void Sol();
@@ -33,8 +33,8 @@ void Circulo(float raio, float x, float y, int numSeg);
 int main(int argc, char** argv){
   glutInit(&argc, argv); //Estabelece contato com sistema de janelas
   glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB); //Cores dos pixels serão expressos em RGB
-  glutInitWindowSize (1000, 800); //Posição inicial do canto superior esquerdo da janela a ser criada
-  glutInitWindowPosition (400, 100); //Estabelece o tamanho (em pixels) da janela a ser criada
+  glutInitWindowSize (1720, 1080); //Posição inicial do canto superior esquerdo da janela a ser criada
+  glutInitWindowPosition (100, 100); //Estabelece o tamanho (em pixels) da janela a ser criada
   glutCreateWindow (argv[1]); //Cria uma nova janela com valor de retorno (não usado)
   // que a identifica, caso tenha mais de uma
   glClearColor(0.0, 0.5, 1.0, 0.0); //selecionar cor de fundo (Branco)
@@ -97,241 +97,234 @@ void Sol(){
 //Função responsável pela modelagem do helicóptero
 void Helicoptero(){
   //Estrutura/corpo do helicóptero
+  glPushMatrix();
+  glTranslated(-9.5 + horizontal, 9.590 + vertical, 0);
+  glScalef(escalar, escalar, 0);
+  glTranslated(+9.5 + horizontal, -9.590 + vertical, 0);
   glBegin(GL_POLYGON); //Iniciando construção de um polígono //Iniciando a definição do corpo do helicóptero como um polígono
-    glColor3ub (R, G, B); //Fizemos alterações de cor, por isso, não  uma cor fixa (cor dinâmica)
-    // Definimos os vértices do polígono que forma o corpo do helicóptero, aplicando deslocamento horizontal e vertical
-    glVertex2f( -5.832 + horizontal,  9.040 + vertical);
-    glVertex2f( -5.811 + horizontal,  9.808 + vertical);
-    glVertex2f( -5.975 + horizontal, 10.512 + vertical);
-    glVertex2f( -6.238 + horizontal, 11.025 + vertical);
-    glVertex2f( -6.722 + horizontal, 11.423 + vertical);
-    glVertex2f( -7.270 + horizontal, 11.665 + vertical);
-    glVertex2f( -8.082 + horizontal, 11.656 + vertical);
-    glVertex2f( -8.977 + horizontal, 11.631 + vertical);
-    glVertex2f( -9.555 + horizontal, 11.414 + vertical);
-    glVertex2f(-10.287 + horizontal, 11.071 + vertical);
-    glVertex2f(-10.754 + horizontal, 10.489 + vertical);
-    glVertex2f(-11.144 + horizontal,  9.724 + vertical);
-    glVertex2f(-11.752 + horizontal,  9.408 + vertical);
-    glVertex2f(-12.386 + horizontal,  9.276 + vertical);
-    glVertex2f(-12.906 + horizontal,  9.233 + vertical);
-    glVertex2f(-13.544 + horizontal,  9.136 + vertical);
-    glVertex2f(-13.880 + horizontal,  9.320 + vertical);
-    glVertex2f(-14.064 + horizontal,  9.840 + vertical);
-    glVertex2f(-14.461 + horizontal,  9.860 + vertical);
-    glVertex2f(-14.603 + horizontal,  9.404 + vertical);
-    glVertex2f(-14.351 + horizontal,  8.973 + vertical);
-    glVertex2f(-13.987 + horizontal,  8.559 + vertical);
-    glVertex2f(-13.370 + horizontal,  8.559 + vertical);
-    glVertex2f(-12.662 + horizontal,  8.559 + vertical);
-    glVertex2f(-11.954 + horizontal,  8.627 + vertical);
-    glVertex2f(-11.337 + horizontal,  8.627 + vertical);
-    glVertex2f(-10.812 + horizontal,  8.719 + vertical);
-    glVertex2f(-10.355 + horizontal,  8.627 + vertical);
-    glVertex2f(- 9.945 + horizontal,  8.424 + vertical);
-    glVertex2f(- 9.641 + horizontal,  8.091 + vertical);
-    glVertex2f(- 9.223 + horizontal,  7.860 + vertical);
-    glVertex2f(- 8.717 + horizontal,  7.687 + vertical);
-    glVertex2f(- 8.182 + horizontal,  7.687 + vertical);
-    glVertex2f(- 7.648 + horizontal,  7.745 + vertical);
-    glVertex2f(- 7.041 + horizontal,  7.817 + vertical);
-    glVertex2f(- 6.492 + horizontal,  8.005 + vertical);
-    glVertex2f(- 6.059 + horizontal,  8.424 + vertical);
-    glVertex2f(- 5.832 + horizontal,  9.040 + vertical); //Fechando o polígono
+    
+    glColor3ub (158, 0, 0); //Fizemos alterações de cor, por isso, não  uma cor fixa (cor dinâmica)
+
+    // Definimos os vértices do polígono que forma o corpo do helicóptero
+    glVertex2f(- 5.832,  9.040);
+    glVertex2f(- 5.811,  9.808);
+    glVertex2f(- 5.975, 10.512);
+    glVertex2f(- 6.238, 11.025);
+    glVertex2f(- 6.722, 11.423);
+    glVertex2f(- 7.270, 11.665);
+    glVertex2f(- 8.082, 11.656);
+    glVertex2f(- 8.977, 11.631);
+    glVertex2f(- 9.555, 11.414);
+    glVertex2f(-10.287, 11.071);
+    glVertex2f(-10.754, 10.489);
+    glVertex2f(-11.144,  9.724);
+    glVertex2f(-11.752,  9.408);
+    glVertex2f(-12.386,  9.276);
+    glVertex2f(-12.906,  9.233);
+    glVertex2f(-13.544,  9.136);
+    glVertex2f(-13.880,  9.320);
+    glVertex2f(-14.064,  9.840);
+    glVertex2f(-14.461,  9.860);
+    glVertex2f(-14.603,  9.404);
+    glVertex2f(-14.351,  8.973);
+    glVertex2f(-13.987,  8.559);
+    glVertex2f(-13.370,  8.559);
+    glVertex2f(-12.662,  8.559);
+    glVertex2f(-11.954,  8.627);
+    glVertex2f(-11.337,  8.627);
+    glVertex2f(-10.812,  8.719);
+    glVertex2f(-10.355,  8.627);
+    glVertex2f(- 9.945,  8.424);
+    glVertex2f(- 9.641,  8.091);
+    glVertex2f(- 9.223,  7.860);
+    glVertex2f(- 8.717,  7.687);
+    glVertex2f(- 8.182,  7.687);
+    glVertex2f(- 7.648,  7.745);
+    glVertex2f(- 7.041,  7.817);
+    glVertex2f(- 6.492,  8.005);
+    glVertex2f(- 6.059,  8.424);
+    glVertex2f(- 5.832,  9.040); //Fechando o polígono
   glEnd();
 
-  //Janela, hélices e esquis
+  //janela
   glBegin(GL_POLYGON); //Iniciando construção de um polígono
     glColor3ub (0, 0, 0);
-    glVertex2f(-8.082 + horizontal, 11.656 + vertical);
-    glVertex2f(-8.082 + horizontal,  9.613 + vertical);
-    glVertex2f(-8.070 + horizontal,  9.590 + vertical);
-    glVertex2f(-8.058 + horizontal,  9.574 + vertical);
-    glVertex2f(-8.043 + horizontal,  9.565 + vertical);
-    glVertex2f(-8.025 + horizontal,  9.560 + vertical);
-    glVertex2f(-7.982 + horizontal,  9.556 + vertical);
-    glVertex2f(-5.819 + horizontal,  9.560 + vertical);
-    glVertex2f(-5.811 + horizontal,  9.808 + vertical);
-    glVertex2f(-5.975 + horizontal, 10.512 + vertical);
-    glVertex2f(-6.238 + horizontal, 11.025 + vertical);
-    glVertex2f(-6.722 + horizontal, 11.423 + vertical);
-    glVertex2f(-7.270 + horizontal, 11.665 + vertical); //Fechando o polígono
+    glVertex2f(-8.082, 11.656);
+    glVertex2f(-8.082,  9.613);
+    glVertex2f(-8.070,  9.590);
+    glVertex2f(-8.058,  9.574);
+    glVertex2f(-8.043,  9.565);
+    glVertex2f(-8.025,  9.560);
+    glVertex2f(-7.982,  9.556);
+    glVertex2f(-5.819,  9.560);
+    glVertex2f(-5.811,  9.808);
+    glVertex2f(-5.975, 10.512);
+    glVertex2f(-6.238, 11.025);
+    glVertex2f(-6.722, 11.423);
+    glVertex2f(-7.270, 11.665); //Fechando o polígono
   glEnd();
 
+  //base suporte hélice
   glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-8.334 + horizontal, 11.656 + vertical);
-    glVertex2f(-8.334 + horizontal, 11.749 + vertical);
-    glVertex2f(-8.297 + horizontal, 11.769 + vertical);
-    glVertex2f(-8.182 + horizontal, 11.770 + vertical);
-    glVertex2f(-7.982 + horizontal, 11.769 + vertical);
-    glVertex2f(-7.883 + horizontal, 11.770 + vertical);
-    glVertex2f(-7.853 + horizontal, 11.742 + vertical);
-    glVertex2f(-7.853 + horizontal, 11.656 + vertical); //Fechando o polígono
+    glVertex2f(-8.334, 11.656);
+    glVertex2f(-8.334, 11.749);
+    glVertex2f(-8.297, 11.769);
+    glVertex2f(-8.182, 11.770);
+    glVertex2f(-7.982, 11.769);
+    glVertex2f(-7.883, 11.770);
+    glVertex2f(-7.853, 11.742);
+    glVertex2f(-7.853, 11.656); //Fechando o polígono
   glEnd();
 
+  //suporte da hélice
   glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-8.182 + horizontal, 11.770 + vertical);
-    glVertex2f(-8.182 + horizontal, 12.056 + vertical);
-    glVertex2f(-8.142 + horizontal, 12.094 + vertical);
-    glVertex2f(-8.082 + horizontal, 12.112 + vertical);
-    glVertex2f(-8.025 + horizontal, 12.096 + vertical);
-    glVertex2f(-7.982 + horizontal, 12.056 + vertical);
-    glVertex2f(-7.982 + horizontal, 11.769 + vertical); //Fechando o polígono
+    glVertex2f(-8.182, 11.770);
+    glVertex2f(-8.182, 12.056);
+    glVertex2f(-8.142, 12.094);
+    glVertex2f(-8.082, 12.112);
+    glVertex2f(-8.025, 12.096);
+    glVertex2f(-7.982, 12.056);
+    glVertex2f(-7.982, 11.769); //Fechando o polígono
   glEnd();
 
+//base circular hélice
   glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-8.182 + horizontal, 12.056 + vertical);
-    glVertex2f(-8.240 + horizontal, 12.064 + vertical);
-    glVertex2f(-8.264 + horizontal, 12.081 + vertical);
-    glVertex2f(-8.253 + horizontal, 12.113 + vertical);
-    glVertex2f(-8.223 + horizontal, 12.137 + vertical);
-    glVertex2f(-8.182 + horizontal, 12.156 + vertical);
-    glVertex2f(-8.121 + horizontal, 12.166 + vertical);
-    glVertex2f(-8.057 + horizontal, 12.166 + vertical);
-    glVertex2f(-7.982 + horizontal, 12.156 + vertical);
-    glVertex2f(-7.944 + horizontal, 12.137 + vertical);
-    glVertex2f(-7.913 + horizontal, 12.115 + vertical);
-    glVertex2f(-7.924 + horizontal, 12.065 + vertical);
-    glVertex2f(-7.924 + horizontal, 12.065 + vertical);
-    glVertex2f(-8.182 + horizontal, 12.056 + vertical);
-    glVertex2f(-8.142 + horizontal, 12.094 + vertical);
-    glVertex2f(-8.082 + horizontal, 12.112 + vertical);
-    glVertex2f(-8.025 + horizontal, 12.096 + vertical);
-    glVertex2f(-7.982 + horizontal, 12.056 + vertical); //Fechando o polígono
+    glVertex2f(-8.182, 12.056);
+    glVertex2f(-8.240, 12.064);
+    glVertex2f(-8.264, 12.081);
+    glVertex2f(-8.253, 12.113);
+    glVertex2f(-8.223, 12.137);
+    glVertex2f(-8.182, 12.156);
+    glVertex2f(-8.121, 12.166);
+    glVertex2f(-8.057, 12.166);
+    glVertex2f(-7.982, 12.156);
+    glVertex2f(-7.944, 12.137);
+    glVertex2f(-7.913, 12.115);
+    glVertex2f(-7.924, 12.065);
+    glVertex2f(-7.924, 12.065);
+    glVertex2f(-8.182, 12.056);
+    glVertex2f(-8.142, 12.094);
+    glVertex2f(-8.082, 12.112);
+    glVertex2f(-8.025, 12.096);
+    glVertex2f(-7.982, 12.056); //Fechando o polígono
   glEnd();
 
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f( -8.223 + horizontal, 12.137 + vertical);
-    glVertex2f(-13.482 + horizontal, 12.670 + vertical);
-    glVertex2f(-13.547 + horizontal, 12.654 + vertical);
-    glVertex2f(-13.596 + horizontal, 12.630 + vertical);
-    glVertex2f(-13.679 + horizontal, 12.573 + vertical);
-    glVertex2f(-13.722 + horizontal, 12.532 + vertical);
-    glVertex2f(-13.738 + horizontal, 12.495 + vertical);
-    glVertex2f(-13.763 + horizontal, 12.419 + vertical);
-    glVertex2f(-13.774 + horizontal, 12.357 + vertical);
-    glVertex2f(-13.785 + horizontal, 12.280 + vertical);
-    glVertex2f(-13.784 + horizontal, 12.192 + vertical);
-    glVertex2f(-13.767 + horizontal, 12.117 + vertical);
-    glVertex2f(-13.740 + horizontal, 12.064 + vertical);
-    glVertex2f(-13.700 + horizontal, 12.016 + vertical);
-    glVertex2f(-13.646 + horizontal, 11.991 + vertical);
-    glVertex2f(-13.554 + horizontal, 11.966 + vertical);
-    glVertex2f(-13.482 + horizontal, 11.956 + vertical);
-    glVertex2f(- 8.264 + horizontal, 12.081 + vertical);
-    glVertex2f(- 8.253 + horizontal, 12.113 + vertical); //Fechando o polígono
-  glEnd();
-
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-7.944 + horizontal, 12.137 + vertical);
-    glVertex2f(-7.913 + horizontal, 12.115 + vertical);
-    glVertex2f(-7.906 + horizontal, 12.087 + vertical);
-    glVertex2f(-2.915 + horizontal, 11.955 + vertical);
-    glVertex2f(-2.861 + horizontal, 11.958 + vertical);
-    glVertex2f(-2.795 + horizontal, 11.971 + vertical);
-    glVertex2f(-2.707 + horizontal, 12.011 + vertical);
-    glVertex2f(-2.667 + horizontal, 12.045 + vertical);
-    glVertex2f(-2.617 + horizontal, 12.082 + vertical);
-    glVertex2f(-2.584 + horizontal, 12.113 + vertical);
-    glVertex2f(-2.566 + horizontal, 12.144 + vertical);
-    glVertex2f(-2.551 + horizontal, 12.200 + vertical);
-    glVertex2f(-2.548 + horizontal, 12.241 + vertical);
-    glVertex2f(-2.546 + horizontal, 12.283 + vertical);
-    glVertex2f(-2.544 + horizontal, 12.320 + vertical);
-    glVertex2f(-2.550 + horizontal, 12.376 + vertical);
-    glVertex2f(-2.557 + horizontal, 12.440 + vertical);
-    glVertex2f(-2.577 + horizontal, 12.498 + vertical);
-    glVertex2f(-2.599 + horizontal, 12.544 + vertical);
-    glVertex2f(-2.635 + horizontal, 12.583 + vertical);
-    glVertex2f(-2.670 + horizontal, 12.609 + vertical);
-    glVertex2f(-2.707 + horizontal, 12.630 + vertical);
-    glVertex2f(-2.766 + horizontal, 12.652 + vertical);
-    glVertex2f(-2.815 + horizontal, 12.666 + vertical);
-    glVertex2f(-2.898 + horizontal, 12.670 + vertical); //Fechando o polígono
-  glEnd();
+  //hélice direita
+  helice(0, 0);
+  //hélice esquerda
+  helice(1, 0);
 
 
   glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-14.233 + horizontal, 9.053 + vertical);
-    glVertex2f(-14.246 + horizontal, 9.140 + vertical);
-    glVertex2f(-14.238 + horizontal, 9.215 + vertical);
-    glVertex2f(-14.168 + horizontal, 9.262 + vertical);
-    glVertex2f(-14.067 + horizontal, 9.275 + vertical);
-    glVertex2f(-14.001 + horizontal, 9.258 + vertical);
-    glVertex2f(-13.941 + horizontal, 9.213 + vertical);
-    glVertex2f(-13.918 + horizontal, 9.145 + vertical);
-    glVertex2f(-13.941 + horizontal, 9.067 + vertical);
-    glVertex2f(-13.996 + horizontal, 9.016 + vertical);
-    glVertex2f(-14.068 + horizontal, 8.983 + vertical);
-    glVertex2f(-14.147 + horizontal, 8.994 + vertical); //Fechando o polígono
+    glVertex2f(-14.233, 9.053);
+    glVertex2f(-14.246, 9.140);
+    glVertex2f(-14.238, 9.215);
+    glVertex2f(-14.168, 9.262);
+    glVertex2f(-14.067, 9.275);
+    glVertex2f(-14.001, 9.258);
+    glVertex2f(-13.941, 9.213);
+    glVertex2f(-13.918, 9.145);
+    glVertex2f(-13.941, 9.067);
+    glVertex2f(-13.996, 9.016);
+    glVertex2f(-14.068, 8.983);
+    glVertex2f(-14.147, 8.994); //Fechando o polígono
+  glEnd();
+
+  //hélices traseiras
+  glPushMatrix();
+    glTranslatef (-12, 4.2, 0.0);
+    glScaled(0.27, 0.4, 0);
+    helice(0, 45);
+  glPopMatrix();
+
+  glPushMatrix();
+    glTranslatef (-12, 4.2, 0.0);
+    glScaled(0.27, 0.4, 0);
+    helice(1, 45);
+  glPopMatrix();
+  
+  //fim hélices traseiras
+
+  glBegin(GL_POLYGON); //Iniciando construção de um polígono
+    glVertex2f(-8.809, 8.134);
+    glVertex2f(-8.799, 8.184);
+    glVertex2f(-8.765, 8.224);
+    glVertex2f(-8.710, 8.230);
+    glVertex2f(-8.644, 8.222);
+    glVertex2f(-8.616, 8.185);
+    glVertex2f(-8.611, 8.135);
+    glVertex2f(-8.985, 7.348);
+    glVertex2f(-9.191, 7.349); //Fechando o polígono
   glEnd();
 
   glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-14.233 + horizontal, 9.053 + vertical);
-    glVertex2f(-14.799 + horizontal, 8.757 + vertical);
-    glVertex2f(-14.882 + horizontal, 8.703 + vertical);
-    glVertex2f(-14.923 + horizontal, 8.629 + vertical);
-    glVertex2f(-14.936 + horizontal, 8.569 + vertical);
-    glVertex2f(-14.914 + horizontal, 8.499 + vertical);
-    glVertex2f(-14.842 + horizontal, 8.464 + vertical);
-    glVertex2f(-14.782 + horizontal, 8.456 + vertical);
-    glVertex2f(-14.675 + horizontal, 8.500 + vertical);
-    glVertex2f(-14.147 + horizontal, 8.994 + vertical); //Fechando o polígono
+    glVertex2f(-7.715, 7.355);
+    glVertex2f(-7.917, 7.356);
+    glVertex2f(-7.688, 8.068);
+    glVertex2f(-7.680, 8.141);
+    glVertex2f(-7.630, 8.208);
+    glVertex2f(-7.559, 8.229);
+    glVertex2f(-7.489, 8.197);
+    glVertex2f(-7.468, 8.138);
+    glVertex2f(-7.482, 8.056); //Fechando o polígono
   glEnd();
 
   glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-14.001 + horizontal, 9.258 + vertical);
-    glVertex2f(-13.537 + horizontal, 9.864 + vertical);
-    glVertex2f(-13.462 + horizontal, 9.882 + vertical);
-    glVertex2f(-13.378 + horizontal, 9.878 + vertical);
-    glVertex2f(-13.310 + horizontal, 9.844 + vertical);
-    glVertex2f(-13.283 + horizontal, 9.789 + vertical);
-    glVertex2f(-13.282 + horizontal, 9.712 + vertical);
-    glVertex2f(-13.317 + horizontal, 9.624 + vertical);
-    glVertex2f(-13.941 + horizontal, 9.213 + vertical); //Fechando o polígono
+    glVertex2f(-9.782, 7.347);
+    glVertex2f(-7.075, 7.350);
+    glVertex2f(-7.015, 7.332);
+    glVertex2f(-6.974, 7.295);
+    glVertex2f(-6.951, 7.244);
+    glVertex2f(-6.974, 7.198);
+    glVertex2f(-7.016, 7.168);
+    glVertex2f(-7.072, 7.145);
+    glVertex2f(-9.790, 7.144);
+    glVertex2f(-9.829, 7.164);
+    glVertex2f(-9.874, 7.191);
+    glVertex2f(-9.897, 7.246);
+    glVertex2f(-9.897, 7.246);
+    glVertex2f(-9.882, 7.296);
+    glVertex2f(-9.832, 7.329); //Fechando o polígono
   glEnd();
+  glPopMatrix();
+}
+
+// Função responsável pela modelagem das hélices
+void helice(int bol, int angle){
+  glPushMatrix();
+  glTranslatef (-7.986, 12.062, 0.0);
+  (bol==1)?glRotatef (180+angle, 0.0, 0.0, 1.0) : glRotatef (angle, 0.0, 0.0, 1.0);
+  
+  glTranslatef (7.986, -12.062, 0.0);
 
   glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-8.809 + horizontal, 8.134 + vertical);
-    glVertex2f(-8.799 + horizontal, 8.184 + vertical);
-    glVertex2f(-8.765 + horizontal, 8.224 + vertical);
-    glVertex2f(-8.710 + horizontal, 8.230 + vertical);
-    glVertex2f(-8.644 + horizontal, 8.222 + vertical);
-    glVertex2f(-8.616 + horizontal, 8.185 + vertical);
-    glVertex2f(-8.611 + horizontal, 8.135 + vertical);
-    glVertex2f(-8.985 + horizontal, 7.348 + vertical);
-    glVertex2f(-9.191 + horizontal, 7.349 + vertical); //Fechando o polígono
+    glVertex2f(-7.986, 12.137);
+    glVertex2f(-7.986, 12.062);
+    glVertex2f(-7.986, 11.987);
+    glVertex2f(-2.915, 11.955);
+    glVertex2f(-2.861, 11.958);
+    glVertex2f(-2.795, 11.971);
+    glVertex2f(-2.707, 12.011);
+    glVertex2f(-2.667, 12.045);
+    glVertex2f(-2.617, 12.082);
+    glVertex2f(-2.584, 12.113);
+    glVertex2f(-2.566, 12.144);
+    glVertex2f(-2.551, 12.200);
+    glVertex2f(-2.548, 12.241);
+    glVertex2f(-2.546, 12.283);
+    glVertex2f(-2.544, 12.320);
+    glVertex2f(-2.550, 12.376);
+    glVertex2f(-2.557, 12.440);
+    glVertex2f(-2.577, 12.498);
+    glVertex2f(-2.599, 12.544);
+    glVertex2f(-2.635, 12.583);
+    glVertex2f(-2.670, 12.609);
+    glVertex2f(-2.707, 12.630);
+    glVertex2f(-2.766, 12.652);
+    glVertex2f(-2.815, 12.666);
+    glVertex2f(-2.898, 12.670); //Fechando o polígono
   glEnd();
-
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-7.715 + horizontal, 7.355 + vertical);
-    glVertex2f(-7.917 + horizontal, 7.356 + vertical);
-    glVertex2f(-7.688 + horizontal, 8.068 + vertical);
-    glVertex2f(-7.680 + horizontal, 8.141 + vertical);
-    glVertex2f(-7.630 + horizontal, 8.208 + vertical);
-    glVertex2f(-7.559 + horizontal, 8.229 + vertical);
-    glVertex2f(-7.489 + horizontal, 8.197 + vertical);
-    glVertex2f(-7.468 + horizontal, 8.138 + vertical);
-    glVertex2f(-7.482 + horizontal, 8.056 + vertical); //Fechando o polígono
-  glEnd();
-
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-9.782 + horizontal, 7.347 + vertical);
-    glVertex2f(-7.075 + horizontal, 7.350 + vertical);
-    glVertex2f(-7.015 + horizontal, 7.332 + vertical);
-    glVertex2f(-6.974 + horizontal, 7.295 + vertical);
-    glVertex2f(-6.951 + horizontal, 7.244 + vertical);
-    glVertex2f(-6.974 + horizontal, 7.198 + vertical);
-    glVertex2f(-7.016 + horizontal, 7.168 + vertical);
-    glVertex2f(-7.072 + horizontal, 7.145 + vertical);
-    glVertex2f(-9.790 + horizontal, 7.144 + vertical);
-    glVertex2f(-9.829 + horizontal, 7.164 + vertical);
-    glVertex2f(-9.874 + horizontal, 7.191 + vertical);
-    glVertex2f(-9.897 + horizontal, 7.246 + vertical);
-    glVertex2f(-9.897 + horizontal, 7.246 + vertical);
-    glVertex2f(-9.882 + horizontal, 7.296 + vertical);
-    glVertex2f(-9.832 + horizontal, 7.329 + vertical); //Fechando o polígono
-  glEnd();
+  glPopMatrix();
 }
 
 // Função que esenha os coqueiros, chamando funções menores que desenham cada parte do coqueiro
@@ -692,16 +685,26 @@ void keyboard(unsigned char key, int x, int y) {
     printf(">>> Tecla pressionada: %c\n", key);
 
     switch (key) {
-        //Se a tecla pressionada for a tecla 'ESC' (código 27), encerra o programa
-        case 27:
-            exit(0);
-            break;
+      //Se a tecla pressionada for a tecla 'ESC' (código 27), encerra o programa
+      case 27:
+        exit(0);
+        break;
 
-        //Se a tecla pressionada for a barra de espaço (código 32)
-        case 32:
-            //Ocorre a atualização da tela, através do redrawing (re-renderização)
-            glutPostRedisplay();
-            break;
+      //Se a tecla pressionada for a barra de espaço (código 32)
+      case 32:
+        //Ocorre a atualização da tela, através do redrawing (re-renderização)
+        glutPostRedisplay();
+        break;
+             
+      case 43:
+        escalar += 0.1;
+        glutPostRedisplay();
+        break;
+
+      case 45:
+        escalar -= 0.1;
+        glutPostRedisplay();
+        break;
     }
 }
 
@@ -709,30 +712,6 @@ void keyboard(unsigned char key, int x, int y) {
 void Special_keyboard(GLint tecla, int x, int y) {
     //O parâmetro 'tecla' é o código da tecla especial pressionada
     switch (tecla) {
-        //Caso a tecla F12 seja pressionada, muda a cor original do helicóptero para roxo
-        case GLUT_KEY_F12:
-            R = 137;
-            G = 0;
-            B = 206;
-            glutPostRedisplay(); // Atualiza a tela
-            break;
-
-        //Caso a tecla F11 seja pressionada, muda a cor do helicóptero para vermelho, ou seja, volta para a cor original
-        case GLUT_KEY_F11:
-            R = 158;
-            G = 0;
-            B = 0;
-            glutPostRedisplay(); // Atualiza a tela
-            break;
-
-        //Caso a tecla F10 seja pressionada, muda a cor do helicóptero para marrom
-        case GLUT_KEY_F10:
-            R = 109;
-            G = 67;
-            B = 0;
-            glutPostRedisplay(); // Atualiza a tela
-            break;
-
         /*Movimentação horizontal para a direita.
           Essa função move o helicóptero para direita, através da seta para a direita*/
         case GLUT_KEY_RIGHT:
