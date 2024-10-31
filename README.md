@@ -10,10 +10,16 @@ gcc <nomearquivo.c> -o nome_saída –lglut –lGL –lGLU –lm
 
 ### Imagem animação
 * 05/10/24 
-![alt text](/imagens/image.png)
+![alt text](/imagens/imagem.png)
 
 * 05/10/24 
-![alt text](/imagens/image2.png)
+![alt text](/imagens/imagem2.png)
 
 * 07/10/24 
-![alt text](/imagens/image3.png)
+![alt text](/imagens/imagem3.png)
+
+* 08/10/24 
+![alt text](/imagens/imagem4.png)
+
+* 08/10/24 
+![alt text](/imagens/imagem5.png)
