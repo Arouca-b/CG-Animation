@@ -3,30 +3,33 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdbool.h>
+#define PX -9.0
+#define PY 9.5
 
 float horizontal = 0, vertical = 0, escalar=1;
+float pontoMedioX = PX;
+float pontoMedioY = PY;
+float rotation = 0;
 
 void display(void);
 void keyboard(unsigned char key, int x, int y);
 void Special_keyboard(GLint tecla, int x, int y);
 void DesenhaTexto(char *string);
-void Coqueiros(int pos);
+void Coqueiros(int bol);
 void Mar();
-void helice(int bol, int angle);
+void helice(int bol, int angle, int x, int y);
 void Helicoptero();
 void Areia();
 void Sol();
 void Barco();
 void nuvens();
 void nuvemModel1(float posx, float posy);
-void nuvemModel2(float posx, float posy);
-void nuvemModel3(float posx, float posy);
 void Casco(float raio, float x, float y, int numSeg);
 
-void Tronco(int posx);
-void coco(int posx);
-void folhas(int posx);
-void arbusto(int posx);
+void Tronco();
+void coco();
+void folhas();
+void arbusto();
 
 void Circulo(float raio, float x, float y, int numSeg);
 
@@ -47,22 +50,25 @@ int main(int argc, char** argv){
 }
 
 void display(void) {
-  glClear(GL_COLOR_BUFFER_BIT); //Limpa a janela de visualização com a cor de fundo especificada
+  glClear(GL_COLOR_BUFFER_BIT); // Limpa a tela
 
-  //Céu
+   // Ativa o sombreamento suave para o gradiente
+  glShadeModel(GL_SMOOTH);
+
+  // Céu com efeito de pôr do sol ajustado com azul suave no topo
   glBegin(GL_POLYGON);
-      glColor3ub(200, 250, 255);
-      glVertex2f(-15, 0.0);
+    glColor3ub(255, 170, 80);    // Laranja claro próximo ao horizonte
+    glVertex2f(-15, -0.18);
 
-      glColor3ub(100, 150, 200);
-      glVertex2f(-15, 15);
+    glColor3ub(255, 130, 100);   // Rosa suave subindo
+    glVertex2f(-15, 15);
 
-      glColor3ub(150, 200, 250);
-      glVertex2f(15, 15);
+    glColor3ub(180, 200, 255);   // Azul claro no topo direito
+    glVertex2f(15, 15);
 
-      glColor3ub(200, 250, 255);
-      glVertex2f(15, 0);
-    glEnd();
+    glColor3ub(255, 170, 80);    // Laranja claro próximo ao horizonte
+    glVertex2f(15, -0.18);
+  glEnd();
 
   //Chamando as funções que vão desenhar o cenário e os objetos na tela
   Sol();
@@ -71,18 +77,32 @@ void display(void) {
   Areia();
   Barco();
   Helicoptero();
-  Coqueiros(11);
-  Coqueiros(-13);
+  Coqueiros(0);
+  Coqueiros(1);
   glutSwapBuffers(); // Executa os comandos OpenGL para renderização
 }
 //Função responsável pela modelagem do mar
-void Mar(){
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glColor3ub(25, 124, 251);
-    glVertex2f(-15.0, -15);
-    glVertex2f(-15.0, 0);
-    glVertex2f(15, 0);
-    glVertex2f(15, -15);
+void Mar() {
+  // Desenha o gradiente e ondulações suaves invertidas
+  glBegin(GL_QUAD_STRIP);
+  for (float x = -15.0; x <= 15.0; x += 0.2) {
+      float waveTop = 0.2 * sin(x * 1.2);  // Aumenta a ondulação
+
+      glColor3ub(60, 180, 250);  // Azul claro para a base do mar
+      glVertex2f(x, -15.0);      // Base do mar (próximo à areia)
+
+      glColor3ub(25, 120, 240);  // Azul escuro para o topo
+      glVertex2f(x, waveTop);    // Superfície com leve ondulação
+  }
+  glEnd();
+
+  // Quebra das ondas próximo à areia
+  glBegin(GL_QUADS);
+  glColor3ub(200, 220, 255);  // Azul muito claro para simular espuma das ondas
+  glVertex2f(-15.0, -15.0);
+  glVertex2f(15.0, -15.0);
+  glVertex2f(15.0, -14.5);   // Altura ajustada para a linha de espuma
+  glVertex2f(-15.0, -14.5);
   glEnd();
 }
 
@@ -96,204 +116,185 @@ void Sol(){
 
 //Função responsável pela modelagem do helicóptero
 void Helicoptero(){
-  //Estrutura/corpo do helicóptero
-  glPushMatrix();
-  glTranslated(-9.5 + horizontal, 9.590 + vertical, 0);
-  glScalef(escalar, escalar, 0);
-  glTranslated(+9.5 + horizontal, -9.590 + vertical, 0);
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono //Iniciando a definição do corpo do helicóptero como um polígono
-    
-    glColor3ub (158, 0, 0); //Fizemos alterações de cor, por isso, não  uma cor fixa (cor dinâmica)
-
-    // Definimos os vértices do polígono que forma o corpo do helicóptero
-    glVertex2f(- 5.8,  9.0);
-    glVertex2f(- 5.8,  9.8);
-    glVertex2f(- 5.9, 10.5);
-    glVertex2f(- 6.2, 11.0);
-    glVertex2f(- 6.7, 11.4);
-    glVertex2f(- 7.2, 11.6);
-    glVertex2f(- 8.0, 11.6);
-    glVertex2f(- 8.9, 11.6);
-    glVertex2f(- 9.5, 11.4);
-    glVertex2f(-10.2, 11.0);
-    glVertex2f(-10.7, 10.4);
-    glVertex2f(-11.1,  9.7);
-    glVertex2f(-11.7,  9.4);
-    glVertex2f(-12.3,  9.2);
-    glVertex2f(-12.9,  9.2);
-    glVertex2f(-13.5,  9.1);
-    glVertex2f(-13.8,  9.3);
-    glVertex2f(-14.0,  9.8);
-    glVertex2f(-14.4,  9.8);
-    glVertex2f(-14.6,  9.4);
-    glVertex2f(-14.3,  8.9);
-    glVertex2f(-13.9,  8.5);
-    glVertex2f(-13.3,  8.5);
-    glVertex2f(-12.6,  8.5);
-    glVertex2f(-11.9,  8.6);
-    glVertex2f(-11.3,  8.6);
-    glVertex2f(-10.8,  8.7);
-    glVertex2f(-10.3,  8.6);
-    glVertex2f(- 9.9,  8.4);
-    glVertex2f(- 9.6,  8.0);
-    glVertex2f(- 9.2,  7.8);
-    glVertex2f(- 8.7,  7.6);
-    glVertex2f(- 8.1,  7.6);
-    glVertex2f(- 7.6,  7.7);
-    glVertex2f(- 7.0,  7.8);
-    glVertex2f(- 6.4,  8.0);
-    glVertex2f(- 6.0,  8.4);
-    glVertex2f(- 5.8,  9.0); //Fechando o polígono
-  glEnd();
-
-  //janela
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glColor3ub (0, 0, 0);
-    glVertex2f(-8.0, 11.6);
-    glVertex2f(-8.0,  9.6);
-    glVertex2f(-8.0,  9.5);
-    glVertex2f(-8.0,  9.5);
-    glVertex2f(-8.0,  9.5);
-    glVertex2f(-8.0,  9.5);
-    glVertex2f(-7.9,  9.5);
-    glVertex2f(-5.8,  9.5);
-    glVertex2f(-5.8,  9.8);
-    glVertex2f(-5.9, 10.5);
-    glVertex2f(-6.2, 11.0);
-    glVertex2f(-6.7, 11.4);
-    glVertex2f(-7.2, 11.6); //Fechando o polígono
-  glEnd();
-
-  //base suporte hélice
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-8.3, 11.6);
-    glVertex2f(-8.3, 11.7);
-    glVertex2f(-8.2, 11.7);
-    glVertex2f(-8.1, 11.7);
-    glVertex2f(-7.9, 11.7);
-    glVertex2f(-7.8, 11.7);
-    glVertex2f(-7.8, 11.7);
-    glVertex2f(-7.8, 11.6); //Fechando o polígono
-  glEnd();
-
-  //suporte da hélice
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-8.1, 11.7);
-    glVertex2f(-8.1, 12.0);
-    glVertex2f(-8.1, 12.0);
-    glVertex2f(-8.0, 12.1);
-    glVertex2f(-8.0, 12.0);
-    glVertex2f(-7.9, 12.0);
-    glVertex2f(-7.9, 11.7); //Fechando o polígono
-  glEnd();
-
-//base circular hélice
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-8.1, 12.0);
-    glVertex2f(-8.2, 12.0);
-    glVertex2f(-8.2, 12.0);
-    glVertex2f(-8.2, 12.1);
-    glVertex2f(-8.2, 12.1);
-    glVertex2f(-8.1, 12.1);
-    glVertex2f(-8.1, 12.1);
-    glVertex2f(-8.0, 12.1);
-    glVertex2f(-7.9, 12.1);
-    glVertex2f(-7.9, 12.1);
-    glVertex2f(-7.9, 12.1);
-    glVertex2f(-7.9, 12.0);
-    glVertex2f(-7.9, 12.0);
-    glVertex2f(-8.1, 12.0);
-    glVertex2f(-8.1, 12.0);
-    glVertex2f(-8.0, 12.1);
-    glVertex2f(-8.0, 12.0);
-    glVertex2f(-7.9, 12.0); //Fechando o polígono
-  glEnd();
-
-  //hélice direita
-  helice(0, 0);
-  //hélice esquerda
-  helice(1, 0);
-
-
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-14.2, 9.0);
-    glVertex2f(-14.2, 9.1);
-    glVertex2f(-14.2, 9.2);
-    glVertex2f(-14.1, 9.2);
-    glVertex2f(-14.0, 9.2);
-    glVertex2f(-14.0, 9.2);
-    glVertex2f(-13.9, 9.2);
-    glVertex2f(-13.9, 9.1);
-    glVertex2f(-13.9, 9.0);
-    glVertex2f(-13.9, 9.0);
-    glVertex2f(-14.0, 8.9);
-    glVertex2f(-14.1, 8.9); //Fechando o polígono
-  glEnd();
-
-  //hélices traseiras
-  glPushMatrix();
-    glTranslatef (-12, 4.2, 0.0);
-    glScaled(0.27, 0.4, 0);
-    helice(0, 45);
-  glPopMatrix();
-
-  glPushMatrix();
-    glTranslatef (-12, 4.2, 0.0);
-    glScaled(0.27, 0.4, 0);
-    helice(1, 45);
-  glPopMatrix();
+  rotation = (rotation>=360) ? 0 : rotation+45;
   
-  //fim hélices traseiras
+  glutPostRedisplay(); // atualizar a tela
 
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-8.8, 8.1);
-    glVertex2f(-8.7, 8.1);
-    glVertex2f(-8.7, 8.2);
-    glVertex2f(-8.7, 8.2);
-    glVertex2f(-8.6, 8.2);
-    glVertex2f(-8.6, 8.1);
-    glVertex2f(-8.6, 8.1);
-    glVertex2f(-8.9, 7.3);
-    glVertex2f(-9.1, 7.3); //Fechando o polígono
-  glEnd();
+  glPushMatrix();
+    // Transladar para que o ponto médio esteja na origem
+    glTranslatef(pontoMedioX, pontoMedioY, 0.0);
 
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-7.7, 7.3);
-    glVertex2f(-7.9, 7.3);
-    glVertex2f(-7.6, 8.0);
-    glVertex2f(-7.6, 8.1);
-    glVertex2f(-7.6, 8.2);
-    glVertex2f(-7.5, 8.2);
-    glVertex2f(-7.4, 8.1);
-    glVertex2f(-7.4, 8.1);
-    glVertex2f(-7.4, 8.0); //Fechando o polígono
-  glEnd();
+    // Aplicar a escala
+    glScalef(escalar, escalar, 1.0);
 
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glVertex2f(-9.7, 7.3);
-    glVertex2f(-7.0, 7.3);
-    glVertex2f(-7.0, 7.3);
-    glVertex2f(-6.9, 7.2);
-    glVertex2f(-6.9, 7.2);
-    glVertex2f(-6.9, 7.1);
-    glVertex2f(-7.0, 7.1);
-    glVertex2f(-7.0, 7.1);
-    glVertex2f(-9.7, 7.1);
-    glVertex2f(-9.8, 7.1);
-    glVertex2f(-9.8, 7.1);
-    glVertex2f(-9.8, 7.2);
-    glVertex2f(-9.8, 7.2);
-    glVertex2f(-9.8, 7.2);
-    glVertex2f(-9.8, 7.3); //Fechando o polígono
-  glEnd();
+    // Transladar de volta para a posição original
+    glTranslatef(-pontoMedioX, -pontoMedioY, 0.0);
+
+
+    //Estrutura completo do helicóptero
+    glPushMatrix();
+
+      //movimenta o helicóptero conforme as teclas são pressionadas
+      glTranslated(horizontal, vertical, 0);
+
+      //corpo do helicóptero
+      glBegin(GL_POLYGON);
+        glColor3ub (158, 0, 0);
+
+        // Definimos os vértices do polígono que forma o corpo do helicóptero
+        glVertex2f(- 5.8,  9.0);
+        glVertex2f(- 5.8,  9.8);
+        glVertex2f(- 5.9, 10.5);
+        glVertex2f(- 6.2, 11.0);
+        glVertex2f(- 6.7, 11.4);
+        glVertex2f(- 7.2, 11.6);
+        glVertex2f(- 8.0, 11.6);
+        glVertex2f(- 8.9, 11.6);
+        glVertex2f(- 9.5, 11.4);
+        glVertex2f(-10.2, 11.0);
+        glVertex2f(-10.7, 10.4);
+        glVertex2f(-11.1,  9.7);
+        glVertex2f(-11.7,  9.4);
+        glVertex2f(-12.3,  9.2);
+        glVertex2f(-12.9,  9.2);
+        glVertex2f(-13.5,  9.1);
+        glVertex2f(-13.8,  9.3);
+        glVertex2f(-14.0,  9.8);
+        glVertex2f(-14.4,  9.8);
+        glVertex2f(-14.6,  9.4);
+        glVertex2f(-14.3,  8.9);
+        glVertex2f(-13.9,  8.5);
+        glVertex2f(-13.3,  8.5);
+        glVertex2f(-12.6,  8.5);
+        glVertex2f(-11.9,  8.6);
+        glVertex2f(-11.3,  8.6);
+        glVertex2f(-10.8,  8.7);
+        glVertex2f(-10.3,  8.6);
+        glVertex2f(- 9.9,  8.4);
+        glVertex2f(- 9.6,  8.0);
+        glVertex2f(- 9.2,  7.8);
+        glVertex2f(- 8.7,  7.6);
+        glVertex2f(- 8.1,  7.6);
+        glVertex2f(- 7.6,  7.7);
+        glVertex2f(- 7.0,  7.8);
+        glVertex2f(- 6.4,  8.0);
+        glVertex2f(- 6.0,  8.4);
+        glVertex2f(- 5.8,  9.0); //Fechando o polígono
+      glEnd(); //fim Corpo do helicóptero
+
+
+      //janela do helicóptero
+      glBegin(GL_POLYGON); //Iniciando construção de um polígono
+        glColor3ub (0, 0, 0);
+        glVertex2f(-8.0, 11.6);
+        glVertex2f(-8.0,  9.6);
+        glVertex2f(-8.0,  9.5);
+        glVertex2f(-8.0,  9.5);
+        glVertex2f(-8.0,  9.5);
+        glVertex2f(-8.0,  9.5);
+        glVertex2f(-7.9,  9.5);
+        glVertex2f(-5.8,  9.5);
+        glVertex2f(-5.8,  9.8);
+        glVertex2f(-5.9, 10.5);
+        glVertex2f(-6.2, 11.0);
+        glVertex2f(-6.7, 11.4);
+        glVertex2f(-7.2, 11.6); //Fechando o polígono
+      glEnd();
+
+
+      glPushMatrix();
+        //base suporte hélice
+        glBegin(GL_POLYGON); //Iniciando construção de um polígono
+          glVertex2f(-8.3, 11.7);
+          glVertex2f(-7.8, 11.7);
+          glVertex2f(-7.8, 11.6);
+          glVertex2f(-8.3, 11.6); //Fechando o polígono
+        glEnd();
+
+
+        //suporte da hélice
+        glBegin(GL_POLYGON); //Iniciando construção de um polígono
+          glVertex2f(-8.1, 11.7);
+          glVertex2f(-8.1, 12.2);
+          glVertex2f(-7.9, 12.2);
+          glVertex2f(-7.9, 11.7); //Fechando o polígono
+        glEnd();
+        glPushMatrix();  
+          helice(0, rotation,0,0); //hélice direita
+          helice(1, rotation,0,0); //hélice esquerda
+        glPopMatrix();
+
+        //conjunto hélices traseiras
+        glPushMatrix();
+          glPushMatrix();
+            glTranslatef (-11.5, 4.4, 0.0);
+            glScaled(0.3, 0.4, 0);
+            helice(0, 45+rotation, 0, 0);
+          glPopMatrix();
+
+          glPushMatrix();
+            glTranslatef (-11.5, 4.4, 0.0);
+            glScaled(0.3, 0.4, 0);
+            helice(1, 45+rotation,0,0);
+          glPopMatrix();
+
+          //base helices traseiras
+          Circulo(0.15, -13.95, 9.2, 100);
+
+        glPopMatrix();        //fim hélices traseiras
+      glPopMatrix();
+
+      //sutentação de pouso
+      glPushMatrix();
+        Circulo(0.15, -8.65, 8.1, 100);
+        glBegin(GL_POLYGON); //Iniciando construção de um polígono
+          glVertex2f(-8.75, 8.1);
+          glVertex2f(-8.55, 8.1);
+          glVertex2f(-8.95, 7.3);
+          glVertex2f(-9.15, 7.3); //Fechando o polígono
+        glEnd();
+      glPopMatrix();
+
+      glPushMatrix();
+        Circulo(0.15, -7.55, 8, 100);
+        glBegin(GL_POLYGON); //Iniciando construção de um polígono
+          glVertex2f(-7.65, 8.1);
+          glVertex2f(-7.45, 8.1);
+          glVertex2f(-7.85, 7.3);
+          glVertex2f(-8.05, 7.3);
+        glEnd();
+      glPopMatrix();
+
+      glPushMatrix();
+        glBegin(GL_POLYGON); //Iniciando construção de um polígono
+          glVertex2f(-9.782, 7.347);
+          glVertex2f(-7.075, 7.350);
+          glVertex2f(-7.015, 7.332);
+          glVertex2f(-6.974, 7.295);
+          glVertex2f(-6.951, 7.244);
+          glVertex2f(-6.974, 7.198);
+          glVertex2f(-7.016, 7.168);
+          glVertex2f(-7.072, 7.145);
+          glVertex2f(-9.790, 7.144);
+          glVertex2f(-9.829, 7.164);
+          glVertex2f(-9.874, 7.191);
+          glVertex2f(-9.897, 7.246);
+          glVertex2f(-9.897, 7.246);
+          glVertex2f(-9.882, 7.296);
+          glVertex2f(-9.832, 7.329); //Fechando o polígono
+        glEnd();
+      glPopMatrix();
+      //fim sustentação de pouso
+
+    glPopMatrix();
   glPopMatrix();
 }
 
 // Função responsável pela modelagem das hélices
-void helice(int bol, int angle){
+void helice(int bol, int angle, int x, int y){
   glPushMatrix();
   glTranslatef (-7.986, 12.062, 0.0);
-  (bol==1)?glRotatef (180+angle, 0.0, 0.0, 1.0) : glRotatef (angle, 0.0, 0.0, 1.0);
+  (bol==1)?glRotatef (180+angle, x, y, 1.0) : glRotatef (angle, x, y, 1.0);
   
   glTranslatef (7.986, -12.062, 0.0);
 
@@ -328,299 +329,330 @@ void helice(int bol, int angle){
 }
 
 // Função que esenha os coqueiros, chamando funções menores que desenham cada parte do coqueiro
-void Coqueiros(int pos) {
-    Tronco(pos);
-    coco(pos);
-    folhas(pos);
-    arbusto(pos);
+void Coqueiros(int bol) {
+  glPushMatrix();
+  if (bol){
+    glTranslated(-13.5, 0, 1);
+  }else{
+    glTranslated(12.5, 0, 1);
+  }
+  Tronco();
+  coco();
+  folhas();
+  arbusto();
+  glPopMatrix();
 }
 
 //Função responsável por chamar as funções que desenham as nuvens no céu
+//Função responsável por chamar as funções que desenham as nuvens no céu
 void nuvens(){
   nuvemModel1(0, 0);
-  nuvemModel2(0, 0);
-  nuvemModel3(-18, 4);
-  nuvemModel1(10, 3);
-  nuvemModel2(23, 2.5);
-  nuvemModel3(-5, -1);
-  nuvemModel3(-10, 3);
+
+  glPushMatrix();  // Salva a matriz de transformação atual
+      glTranslatef(15.0, 3.0, 0.0);  // Usa uma translação menor para manter a nuvem visível
+      glScalef(0.5, 0.5, 1.0);  // Redimensiona a nuvem duplicada
+      glRotatef(0, 0.0, 0.0, 1.0);  // Define um ângulo de rotação mudar a inclinação da nuvem
+      nuvemModel1(0.1, 3);  // Desenha a nuvem duplicada com as transformações
+  glPopMatrix();  // Restaura a matriz de transformação original
+
+  glPushMatrix();  // Salva a matriz de transformação atual
+      glTranslatef(15.0, 3.5, 0.0);  // Usa uma translação menor para manter a nuvem visível
+      glScalef(1, 1, 1.0);  // Redimensiona a nuvem duplicada
+      glRotatef(0, 0.0, 0.0, 1.0);  // Define um ângulo de rotação mudar a inclinação da nuvem
+      nuvemModel1(-5, 5.5);  // Desenha a nuvem duplicada com as transformações
+  glPopMatrix();  // Restaura a matriz de transformação original
+
+  glPushMatrix();  // Salva a matriz de transformação atual
+      glTranslatef(14.5, 3.0, 0.0);  // Usa uma translação menor para manter a nuvem visível
+      glScalef(0.4, 0.4, 1.0);  // Redimensiona a nuvem duplicada
+      glRotatef(0, 0.0, 0.0, 1.0);  // Define um ângulo de rotação mudar a inclinação da nuvem
+      nuvemModel1(-10, 10);  // Desenha a nuvem duplicada com as transformações
+  glPopMatrix();  // Restaura a matriz de transformação original
+
+  glPushMatrix();  // Salva a matriz de transformação atual
+      glTranslatef(15.0, 5.0, 0.0);  // Usa uma translação menor para manter a nuvem visível
+      glScalef(0.4, 0.4, 1.0);  // Redimensiona a nuvem duplicada
+      glRotatef(0, 0.0, 0.0, 1.0);  // Define um ângulo de rotação mudar a inclinação da nuvem
+      nuvemModel1(-40, 15);  // Desenha a nuvem duplicada com as transformações
+  glPopMatrix();  // Restaura a matriz de transformação original
+
+  glPushMatrix();  // Salva a matriz de transformação atual
+      glTranslatef(15.0, 5.0, 0.0);  // Usa uma translação menor para manter a nuvem visível
+      glScalef(0.6, 0.6, 1.0);  // Redimensiona a nuvem duplicada
+      glRotatef(0, 0.0, 0.0, 1.0);  // Define um ângulo de rotação mudar a inclinação da nuvem
+      nuvemModel1(-40, 9);  // Desenha a nuvem duplicada com as transformações
+  glPopMatrix();  // Restaura a matriz de transformação original
+
+  glPushMatrix();  // Salva a matriz de transformação atual
+      glTranslatef(2.0, 2.0, 0.0);  // Usa uma translação menor para manter a nuvem visível
+      glScalef(0.3, 0.3, 1.0);  // Redimensiona a nuvem duplicada
+      glRotatef(0, 0.0, 0.0, 1.0);  // Define um ângulo de rotação mudar a inclinação da nuvem
+      nuvemModel1(-30, 13);  // Desenha a nuvem duplicada com as transformações
+  glPopMatrix();  // Restaura a matriz de transformação original
+
+  glPushMatrix();  // Salva a matriz de transformação atual
+      glRotatef(-45, 0.0, 0.0, 1.0);  // Define um ângulo de rotação mudar, nesse caso 45 graus, a inclinação da nuvem
+      glTranslatef(2.0, 2.0, 0.0);  // Usa uma translação menor para manter a nuvem visível
+      glScalef(0.3, 0.3, 1.0);  // Redimensiona a nuvem duplicada
+      nuvemModel1(-1.5, -42);  // Desenha a nuvem duplicada com as transformações
+  glPopMatrix();  // Restaura a matriz de transformação original
 }
 
 //Função responsável pela modelagem do barco
 void Barco() {
-    //Parte superior do barco
-    glBegin(GL_POLYGON); //Iniciando construção de um polígono
-        glColor3ub(0, 0, 0);
-        glVertex2d(-2.312, -0.677);
-        glVertex2d(-2.380, 0.407);
-        glVertex2d(-1.328, 0.444);
-        glVertex2d(-1.273, -0.635);
-    glEnd();
+  //Parte superior do barco
+  glBegin(GL_POLYGON); //Iniciando construção de um polígono
+    glColor3ub(0, 0, 0);
+    glVertex2d(-2.312, -0.677);
+    glVertex2d(-2.380, 0.407);
+    glVertex2d(-1.328, 0.444);
+    glVertex2d(-1.273, -0.635);
+  glEnd();
 
-    //Estrutura do barco
-    glBegin(GL_POLYGON); //Iniciando construção de um polígono
-        glColor3ub(232, 247, 253);
-        glVertex2d(-4.5, -3);
-        glVertex2d(-4.643, -0.708);
-        glVertex2d(-0.992, -0.539);
-        glVertex2d(-0.895, -2.764);
-    glEnd();
+  //Estrutura do barco
+  glBegin(GL_POLYGON); //Iniciando construção de um polígono
+    glColor3ub(232, 247, 253);
+    glVertex2d(-4.5, -3);
+    glVertex2d(-4.643, -0.708);
+    glVertex2d(-0.992, -0.539);
+    glVertex2d(-0.895, -2.764);
+  glEnd();
 
-    //Parte inferior do barco
-    glBegin(GL_POLYGON); //Iniciando construção de um polígono
-        glColor3ub(233, 54, 62);
-        glVertex2d(-3.017, -2.772);
-        glVertex2d(-3.120, -1.578);
-        glVertex2d(-2.153, -1.496);
-        glVertex2d(-2.042, -2.708);
-    glEnd();
+  //Parte inferior do barco
+  glBegin(GL_POLYGON); //Iniciando construção de um polígono
+    glColor3ub(233, 54, 62);
+    glVertex2d(-3.017, -2.772);
+    glVertex2d(-3.120, -1.578);
+    glVertex2d(-2.153, -1.496);
+    glVertex2d(-2.042, -2.708);
+  glEnd();
 
-    //Janelas (Círculos)
-    glBegin(GL_POLYGON); //Iniciando construção de um polígono
-        glColor3ub(179, 232, 255);
-        Circulo(0.35, -3.798, -1.955, 360);
-    glEnd();
-
-    glBegin(GL_POLYGON); //Iniciando construção de um polígono
+  //Janelas (Círculos)
+  glBegin(GL_POLYGON); //Iniciando construção de um polígono
     glColor3ub(179, 232, 255);
-        Circulo(0.35, -1.485, -1.699, 360);
-    glEnd();
+    Circulo(0.35, -3.798, -1.955, 360);
+  glEnd();
 
-    //Casco do barco
-    glBegin(GL_POLYGON); //Iniciando construção de um polígono
-        glColor3ub(0, 0, 0); // Cor do casco do barco
-        Casco(3.0, -2.0, -2.5, 100);
-    glEnd();
+  glBegin(GL_POLYGON); //Iniciando construção de um polígono
+    Circulo(0.35, -1.485, -1.699, 360);
+  glEnd();
 
-    //Bolhas de ar decorativas
-    glColor3ub(255, 255, 255); // Cor branca para as bolhas
-    Circulo(0.15, -2.1, 0.7, 100); // Bolha 1
-    Circulo(0.1, -1.7, 1.0, 100);  // Bolha 2
-    Circulo(0.1, -2.3, 1.3, 100);  // Bolha 3
-    Circulo(0.12, -1.5, 1.5, 100); // Bolha 4
-    Circulo(0.08, -2.0, 1.7, 100); // Bolha 5
+  //Casco do barco
+  glBegin(GL_POLYGON); //Iniciando construção de um polígono
+      glColor3ub(0, 0, 0); // Cor do casco do barco
+      Casco(3.0, -2.0, -2.5, 100);
+  glEnd();
+
+  //Bolhas de ar decorativas
+  glColor3ub(255, 255, 255); // Cor branca para as bolhas
+  Circulo(0.15, -2.1, 0.7, 100); // Bolha 1
+  Circulo(0.1, -1.7, 1.0, 100);  // Bolha 2
+  Circulo(0.1, -2.3, 1.3, 100);  // Bolha 3
+  Circulo(0.12, -1.5, 1.5, 100); // Bolha 4
+  Circulo(0.08, -2.0, 1.7, 100); // Bolha 5
 }
 
 //Função que desenha um círculo ou um semi-círculo
 void Circulo(float raio, float x, float y, int numSeg) {
-    glBegin(GL_POLYGON); //Iniciando construção de um polígono
+  glBegin(GL_POLYGON); //Iniciando construção de um polígono
 
-    //Se for um semi-círculo, desenha de 0 a pi (180 graus), caso contrário, desenha de 0 a 2pi (360 graus)
-    float anguloMax = 2.0f * M_PI;
+  //Se for um semi-círculo, desenha de 0 a pi (180 graus), caso contrário, desenha de 0 a 2pi (360 graus)
+  float anguloMax = 2.0f * M_PI;
 
-    for (int i = 0; i <= numSeg; i++) {
-        float angulo = anguloMax * i / numSeg; // Ângulo em radianos
-        float dx = raio * cos(angulo); // Coordenada x
-        float dy = raio * sin(angulo); // Coordenada y
+  for (int i = 0; i <= numSeg; i++) {
+    float angulo = anguloMax * i / numSeg; // Ângulo em radianos
+    float dx = raio * cos(angulo); // Coordenada x
+    float dy = raio * sin(angulo); // Coordenada y
 
-        //Inverte a coordenada y para que o semi-círculo fique virado para cima
-        glVertex2f(x + dx, y + dy); // Ponto na borda do círculo ou semi-círculo
-    }
+    //Inverte a coordenada y para que o semi-círculo fique virado para cima
+    glVertex2f(x + dx, y + dy); // Ponto na borda do círculo ou semi-círculo
+  }
 
-    glEnd();
+  glEnd();
 }
 
 //Função que desenha o semi-círculo que forma o casco do barco
 void Casco(float raio, float x, float y, int numSeg) {
-    glBegin(GL_POLYGON); //Iniciando construção de um polígono
+  glBegin(GL_POLYGON); //Iniciando construção de um polígono
 
-    //Como é um semi-círculo, desenha de 0 a pi (180 graus)
-    float anguloMax = M_PI;
+  //Como é um semi-círculo, desenha de 0 a pi (180 graus)
+  float anguloMax = M_PI;
 
-    for (int i = 0; i <= numSeg; i++) {
-        float angulo = anguloMax * i / numSeg; // Ângulo em radianos
-        float dx = raio * cos(angulo); // Coordenada x
-        float dy = raio * sin(angulo); // Coordenada y
+  for (int i = 0; i <= numSeg; i++) {
+    float angulo = anguloMax * i / numSeg; // Ângulo em radianos
+    float dx = raio * cos(angulo); // Coordenada x
+    float dy = raio * sin(angulo); // Coordenada y
 
-        // Para inverter a boca do semi-círculo, inverta a coordenada y
-        glVertex2f(x + dx, y + (-dy)); // Inverte dy
-    }
+    // Para inverter a boca do semi-círculo, inverta a coordenada y
+    glVertex2f(x + dx, y + (-dy)); // Inverte dy
+  }
 
-    glEnd();
+  glEnd();
 }
 
 // Função responsável pela modelagem do tronco do coqueiro
-void Tronco(int posx) {
+void Tronco() {
     //Formando o tronco, utilizando círculos
-    glBegin(GL_POLYGON); //Iniciando construção de um polígono
+  glBegin(GL_POLYGON); //Iniciando construção de um polígono
     glColor3ub(115, 97, 84); //Marrom
-        Circulo(0.8, 1 + posx, -6 + 2, 360);
-        Circulo(0.8, 1 + posx, -7 + 2, 360);
-        Circulo(0.8, 1 + posx, -8 + 2, 360);
-        Circulo(0.8, 1 + posx, -9 + 2, 360);
-        Circulo(0.8, 1 + posx, -10 + 2, 360);
-        Circulo(0.8, 1 + posx, -11 + 2, 360);
-        Circulo(0.8, 1 + posx, -12 + 2, 360);
-        Circulo(0.8, 1 + posx, -13 + 2, 360);
-        Circulo(0.8, 1 + posx, -14 + 2, 360);
-        Circulo(0.8, 1 + posx, -15 + 2, 360);
-        Circulo(0.8, 1 + posx, -16 + 2, 360);
-    glEnd();
+    Circulo(0.8, 1, -6 + 2, 360);
+    Circulo(0.8, 1, -7 + 2, 360);
+    Circulo(0.8, 1, -8 + 2, 360);
+    Circulo(0.8, 1, -9 + 2, 360);
+    Circulo(0.8, 1, -10 + 2, 360);
+    Circulo(0.8, 1, -11 + 2, 360);
+    Circulo(0.8, 1, -12 + 2, 360);
+    Circulo(0.8, 1, -13 + 2, 360);
+    Circulo(0.8, 1, -14 + 2, 360);
+    Circulo(0.8, 1, -15 + 2, 360);
+    Circulo(0.8, 1, -16 + 2, 360);
+  glEnd();
 }
 
 // Função responsável pela modelagem dos cocos pendurados
-void coco(int posx) {
-    //Formando os cocos através de círculos
-    glBegin(GL_POLYGON); //Iniciando construção de um polígono
+void coco() {
+  //Formando os cocos através de círculos
+  glBegin(GL_POLYGON); //Iniciando construção de um polígono
     glColor3ub(64, 171, 81);//Verde um pouco mais claro
-        Circulo(0.5, posx + 1 - 0.5, -6.5 + 1.8, 360);
-        Circulo(0.5, posx + 1 + 0.5, -6.5 + 1.8, 360);
-        Circulo(0.5, posx + 1, -7.0 + 1.8, 360);
-    glEnd();
+    Circulo(0.5,  0.5, -4.7, 360);
+    Circulo(0.5,  1.5, -4.7, 360);
+    Circulo(0.5,  1.0, -5.2, 360);
+  glEnd();
 }
 
 // Função responsável pela modelagem da folhagem dos coqueiros
-void folhas(int posx){
-    //Desenhando cada parte que forma as folhas
-    glBegin(GL_POLYGON); //Iniciando construção de um polígono
+void folhas(){
+  //Desenhando cada parte que forma as folhas
+  glBegin(GL_POLYGON); //Iniciando construção de um polígono
     glColor3ub(50, 130, 20);//Verde escuro
-        glVertex2f( 0.9665 + posx, -6.2274 + 2);
-        glVertex2f( 0.2737 + posx, -6.5353 + 2);
-        glVertex2f(-0.3934 + posx, -7.2923 + 2);
-        glVertex2f(-0.9708 + posx, -8.2289 + 2);
-        glVertex2f(-1.3428 + posx, -9.0757 + 2);
-        glVertex2f(-1.4583 + posx, -8.3829 + 2);
-        glVertex2f(-1.3428 + posx, -7.1640 + 2);
-        glVertex2f(-0.6243 + posx, -5.8296 + 2);
-        glVertex2f(-0.2009 + posx, -5.3036 + 2);
-        glVertex2f(-0.9066 + posx, -5.3164 + 2);
-        glVertex2f(-1.8047 + posx, -5.6372 + 2);
-        glVertex2f(-2.4334 + posx, -6.0991 + 2);
-        glVertex2f(-2.9081 + posx, -6.5866 + 2);
-        glVertex2f(-2.7285 + posx, -5.6500 + 2);
-        glVertex2f(-1.9459 + posx, -4.7904 + 2);
-        glVertex2f(-1.0221 + posx, -4.4183 + 2);
-        glVertex2f(-0.1240 + posx, -4.2900 + 2);
-        glVertex2f(-1.3942 + posx, -3.7896 + 2);
-        glVertex2f(-2.2795 + posx, -3.5458 + 2);
-        glVertex2f(-2.9723 + posx, -3.5458 + 2);
-        glVertex2f(-2.3401 + posx, -3.2531 + 2);
-        glVertex2f(-1.5616 + posx, -3.0711 + 2);
-        glVertex2f(-1.0000 + posx, -3.0000 + 2);
-        glVertex2f(-0.5000 + posx, -3.0000 + 2);
-        glVertex2f( 0.0408 + posx, -3.1419 + 2);
-        glVertex2f( 0.5867 + posx, -3.4249 + 2);
-        glVertex2f( 0.8092 + posx, -3.5665 + 2);
-        glVertex2f( 1.5674 + posx, -2.7425 + 2);
-        glVertex2f( 2.3105 + posx, -2.3482 + 2);
-        glVertex2f( 3.2030 + posx, -2.2637 + 2);
-        glVertex2f( 3.0000 + posx, -2.5000 + 2);
-        glVertex2f( 2.4363 + posx, -2.9785 + 2);
-        glVertex2f( 2.0846 + posx, -3.5378 + 2);
-        glVertex2f( 1.9463 + posx, -3.8433 + 2);
-        glVertex2f( 2.0731 + posx, -3.8664 + 2);
-        glVertex2f( 2.5458 + posx, -3.5781 + 2);
-        glVertex2f( 3.3010 + posx, -3.3014 + 2);
-        glVertex2f( 3.9064 + posx, -3.2264 + 2);
-        glVertex2f( 4.4368 + posx, -3.3014 + 2);
-        glVertex2f( 4.6904 + posx, -3.3936 + 2);
-        glVertex2f( 4.2984 + posx, -3.6012 + 2);
-        glVertex2f( 3.1339 + posx, -4.1546 + 2);
-        glVertex2f( 2.4420 + posx, -4.6621 + 2);
-        glVertex2f( 3.0128 + posx, -4.6677 + 2);
-        glVertex2f( 4.0330 + posx, -5.3036 + 2);
-        glVertex2f( 4.8284 + posx, -6.1632 + 2);
-        glVertex2f( 5.1107 + posx, -7.1896 + 2);
-        glVertex2f( 5.0466 + posx, -7.6772 + 2);
-        glVertex2f( 4.6616 + posx, -7.2153 + 2);
-        glVertex2f( 3.9560 + posx, -6.5866 + 2);
-        glVertex2f( 3.0000 + posx, -6.0000 + 2);
-        glVertex2f( 2.2752 + posx, -5.8681 + 2);
-        glVertex2f( 1.6594 + posx, -5.9194 + 2);
-        glVertex2f( 1.4290 + posx, -5.8776 + 2);
-        glVertex2f( 1.1906 + posx, -5.9607 + 2);
-        glVertex2f( 0.9800 + posx, -6.1000 + 2);
-    glEnd();
+    glVertex2f( 0.9665, -4.2274);
+    glVertex2f( 0.2737, -4.5353);
+    glVertex2f(-0.3934, -5.2923);
+    glVertex2f(-0.9708, -6.2289);
+    glVertex2f(-1.3428, -7.0757);
+    glVertex2f(-1.4583, -6.3829);
+    glVertex2f(-1.3428, -5.1640);
+    glVertex2f(-0.6243, -3.8296);
+    glVertex2f(-0.2009, -3.3036);
+    glVertex2f(-0.9066, -3.3164);
+    glVertex2f(-1.8047, -3.6372);
+    glVertex2f(-2.4334, -4.0991);
+    glVertex2f(-2.9081, -4.5866);
+    glVertex2f(-2.7285, -3.6500);
+    glVertex2f(-1.9459, -2.7904);
+    glVertex2f(-1.0221, -2.4183);
+    glVertex2f(-0.1240, -2.2900);
+    glVertex2f(-1.3942, -1.7896);
+    glVertex2f(-2.2795, -1.5458);
+    glVertex2f(-2.9723, -1.5458);
+    glVertex2f(-2.3401, -1.2531);
+    glVertex2f(-1.5616, -1.0711);
+    glVertex2f(-1.0000, -1.0000);
+    glVertex2f(-0.5000, -1.0000);
+    glVertex2f( 0.0408, -1.1419);
+    glVertex2f( 0.5867, -1.4249);
+    glVertex2f( 0.8092, -1.5665);
+    glVertex2f( 1.5674, -0.7425);
+    glVertex2f( 2.3105, -0.3482);
+    glVertex2f( 3.2030, -0.2637);
+    glVertex2f( 3.0000, -0.5000);
+    glVertex2f( 2.4363, -0.9785);
+    glVertex2f( 2.0846, -1.5378);
+    glVertex2f( 1.9463, -1.8433);
+    glVertex2f( 2.0731, -1.8664);
+    glVertex2f( 2.5458, -1.5781);
+    glVertex2f( 3.3010, -1.3014);
+    glVertex2f( 3.9064, -1.2264);
+    glVertex2f( 4.4368, -1.3014);
+    glVertex2f( 4.6904, -1.3936);
+    glVertex2f( 4.2984, -1.6012);
+    glVertex2f( 3.1339, -2.1546);
+    glVertex2f( 2.4420, -2.6621);
+    glVertex2f( 3.0128, -2.6677);
+    glVertex2f( 4.0330, -3.3036);
+    glVertex2f( 4.8284, -4.1632);
+    glVertex2f( 5.1107, -5.1896);
+    glVertex2f( 5.0466, -5.6772);
+    glVertex2f( 4.6616, -5.2153);
+    glVertex2f( 3.9560, -4.5866);
+    glVertex2f( 3.0000, -4.0000);
+    glVertex2f( 2.2752, -3.8681);
+    glVertex2f( 1.6594, -3.9194);
+    glVertex2f( 1.4290, -3.8776);
+    glVertex2f( 1.1906, -3.9607);
+    glVertex2f( 0.9800, -4.1000);
+  glEnd();
 }
 
 //Função responsável pela modelagem dos arbustos que ficam debaixo dos coqueiros
-void arbusto(int posx) {
-    //Desenhando cada detalhe dos arbustos
-    glBegin(GL_POLYGON); //Iniciando construção de um polígono
-        glColor3ub(1, 119, 2);
-        glVertex2f(-4.2120 + posx, -16.6907);
-        glVertex2f(-4.0529 + posx, -16.2670);
-        glVertex2f(-3.2217 + posx, -15.6197);
-        glVertex2f(-3.0000 + posx, -15.5000);
-        glVertex2f(-3.2762 + posx, -15.3813);
-        glVertex2f(-3.2830 + posx, -15.1973);
-        glVertex2f(-2.7515 + posx, -14.7749);
-        glVertex2f(-2.4449 + posx, -14.6658);
-        glVertex2f(-2.0633 + posx, -14.5841);
-        glVertex2f(-2.0581 + posx, -14.5037);
-        glVertex2f(-2.4710 + posx, -14.3525);
-        glVertex2f(-2.2950 + posx, -14.2081);
-        glVertex2f(-1.9565 + posx, -14.0388);
-        glVertex2f(-1.4601 + posx, -13.7997);
-        glVertex2f(-1.6316 + posx, -13.5560);
-        glVertex2f(-1.8087 + posx, -13.4370);
-        glVertex2f(-1.4799 + posx, -13.2932);
-        glVertex2f(-1.3018 + posx, -13.3069);
-        glVertex2f(-0.8459 + posx, -13.0138);
-        glVertex2f(-0.6551 + posx, -13.2487);
-        glVertex2f(-0.3396 + posx, -12.6616);
-        glVertex2f(0.2328 + posx, -13.1606);
-        glVertex2f(0.3273 + posx, -12.8328);
-        glVertex2f(0.4702 + posx, -12.8016);
-        glVertex2f(0.9392 + posx, -12.5336);
-        glVertex2f(1.0687 + posx, -12.5291);
-        glVertex2f(0.9169 + posx, -12.9222);
-        glVertex2f(1.0167 + posx, -12.9333);
-        glVertex2f(1.2883 + posx, -12.7508);
-        glVertex2f(1.5093 + posx, -12.6981);
-        glVertex2f(1.5924 + posx, -12.7042);
-        glVertex2f(1.6106 + posx, -12.7488);
-        glVertex2f(1.5194 + posx, -13.3326);
-        glVertex2f(1.6466 + posx, -13.4359);
-        glVertex2f(2.4561 + posx, -13.1862);
-        glVertex2f(2.6455 + posx, -13.2379);
-        glVertex2f(2.5938 + posx, -13.5737);
-        glVertex2f(2.7661 + posx, -13.8751);
-        glVertex2f(3.0158 + posx, -13.7373);
-        glVertex2f(3.4636 + posx, -13.6081);
-        glVertex2f(4.1870 + posx, -13.7976);
-        glVertex2f(3.7133 + posx, -14.2454);
-        glVertex2f(3.8167 + posx, -14.3746);
-        glVertex2f(4.1870 + posx, -14.4607);
-        glVertex2f(4.9017 + posx, -14.6760);
-        glVertex2f(5.3409 + posx, -14.9688);
-    glEnd();
-}
-
-//Função responsável pela modelagem de uma nuvem
-void nuvemModel1(float posx, float posy){
+void arbusto() {
+  //Desenhando cada detalhe dos arbustos
   glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glColor3ub(255, 255, 255);
-    Circulo(1.2, -6.6 + posx, 12.5 - posy, 360);
-    Circulo(1.2, -5.7 + posx, 13.5 - posy, 360);
-    Circulo(1.2, -4.9 + posx, 12.5 - posy, 360);
-    Circulo(1.2, -4.0 + posx, 13.5 - posy, 360);
-    Circulo(1.2, -3.2 + posx, 12.5 - posy, 360);
+    glColor3ub(1, 119, 2);
+    glVertex2f(-4.2120, -16.6907);
+    glVertex2f(-4.0529, -16.2670);
+    glVertex2f(-3.2217, -15.6197);
+    glVertex2f(-3.0000, -15.5000);
+    glVertex2f(-3.2762, -15.3813);
+    glVertex2f(-3.2830, -15.1973);
+    glVertex2f(-2.7515, -14.7749);
+    glVertex2f(-2.4449, -14.6658);
+    glVertex2f(-2.0633, -14.5841);
+    glVertex2f(-2.0581, -14.5037);
+    glVertex2f(-2.4710, -14.3525);
+    glVertex2f(-2.2950, -14.2081);
+    glVertex2f(-1.9565, -14.0388);
+    glVertex2f(-1.4601, -13.7997);
+    glVertex2f(-1.6316, -13.5560);
+    glVertex2f(-1.8087, -13.4370);
+    glVertex2f(-1.4799, -13.2932);
+    glVertex2f(-1.3018, -13.3069);
+    glVertex2f(-0.8459, -13.0138);
+    glVertex2f(-0.6551, -13.2487);
+    glVertex2f(-0.3396, -12.6616);
+    glVertex2f(0.2328 , -13.1606);
+    glVertex2f(0.3273 , -12.8328);
+    glVertex2f(0.4702 , -12.8016);
+    glVertex2f(0.9392 , -12.5336);
+    glVertex2f(1.0687 , -12.5291);
+    glVertex2f(0.9169 , -12.9222);
+    glVertex2f(1.0167 , -12.9333);
+    glVertex2f(1.2883 , -12.7508);
+    glVertex2f(1.5093 , -12.6981);
+    glVertex2f(1.5924 , -12.7042);
+    glVertex2f(1.6106 , -12.7488);
+    glVertex2f(1.5194 , -13.3326);
+    glVertex2f(1.6466 , -13.4359);
+    glVertex2f(2.4561 , -13.1862);
+    glVertex2f(2.6455 , -13.2379);
+    glVertex2f(2.5938 , -13.5737);
+    glVertex2f(2.7661 , -13.8751);
+    glVertex2f(3.0158 , -13.7373);
+    glVertex2f(3.4636 , -13.6081);
+    glVertex2f(4.1870 , -13.7976);
+    glVertex2f(3.7133 , -14.2454);
+    glVertex2f(3.8167 , -14.3746);
+    glVertex2f(4.1870 , -14.4607);
+    glVertex2f(4.9017 , -14.6760);
+    glVertex2f(5.3409 , -14.9688);
   glEnd();
 }
 
 //Função responsável pela modelagem de uma nuvem
-void nuvemModel2(float posx, float posy){
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glColor3ub(255, 255, 255);
-    Circulo(.7, -10 + posx, 3.5 + posy, 360);
-    Circulo(.7, -11.5 + posx, 4 + posy, 360);
-    Circulo(.7, -12 + posx, 3.5 + posy, 360);
-    Circulo(.7, -10.5 + posx, 4 + posy, 360);
-    Circulo(.7, -11 + posx, 3.5 + posy, 360);
-  glEnd();
-}
+void nuvemModel1(float posx, float posy) {
+    // Sombra difusa da nuvem - camada mais externa
+    glColor3ub(210, 210, 210); // Cinza claro
+    Circulo(1.4, -6.6 + posx + 0.15, 12.5 - posy - 0.15, 360);
+    Circulo(1.4, -4.9 + posx + 0.15, 12.5 - posy - 0.15, 360);
+    Circulo(1.4, -3.2 + posx + 0.15, 12.5 - posy - 0.15, 360);
 
-//Função responsável pela modelagem de uma nuvem
-void nuvemModel3(float posx, float posy){
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glColor3ub(255, 255, 255);
-    Circulo(.3, 12.3 + posx, 2.3 + posy, 360);
-    Circulo(.2, 12.45 + posx, 2.6 + posy, 360);
-    Circulo(.3, 12.6 + posx, 2.3 + posy, 360);
-    Circulo(.2, 12.75 + posx, 2.6 + posy, 360);
-    Circulo(.3, 13 + posx, 2.3 + posy, 360);
-  glEnd();
+    // Camada principal da nuvem em branco
+    glColor3ub(255, 255, 255); // Branco para a camada superior da nuvem
+    Circulo(1.3, -6.6 + posx, 12.5 - posy, 360);
+    Circulo(1.3, -4.9 + posx, 12.5 - posy, 360);
+    Circulo(1.3, -3.2 + posx, 12.5 - posy, 360);
+    Circulo(1.3, -5.7 + posx, 13.5 - posy, 360);
+    Circulo(1.3, -4.0 + posx, 13.5 - posy, 360);
 }
 
 //Função responsável pela modelagem da areia
@@ -680,66 +712,71 @@ void Areia(){
 
 //Função que trata a entrada de teclas comuns
 void keyboard(unsigned char key, int x, int y) {
-    //Exibe uma mensagem indicando que uma tecla foi pressionada
-    printf("*** Tratamento de teclas comuns\n");
-    printf(">>> Tecla pressionada: %c\n", key);
+  //Exibe uma mensagem indicando que uma tecla foi pressionada
+  printf("*** Tratamento de teclas comuns\n");
+  printf(">>> Tecla pressionada: %c\n", key);
 
-    switch (key) {
-      //Se a tecla pressionada for a tecla 'ESC' (código 27), encerra o programa
-      case 27:
-        exit(0);
-        break;
+  switch (key) {
+    //Se a tecla pressionada for a tecla 'ESC' (código 27), encerra o programa
+    case 27:
+      exit(0);
+      break;
 
-      //Se a tecla pressionada for a barra de espaço (código 32)
-      case 32:
-        //Ocorre a atualização da tela, através do redrawing (re-renderização)
-        glutPostRedisplay();
-        break;
-             
-      case 43:
-        escalar += 0.1;
-        glutPostRedisplay();
-        break;
-
-      case 45:
-        escalar -= 0.1;
-        glutPostRedisplay();
-        break;
-    }
+    //Se a tecla pressionada for a barra de espaço (código 32)
+    case 32:
+      //Ocorre a atualização da tela, através do redrawing (re-renderização)
+      glutPostRedisplay();
+      break;
+  }
 }
 
 //Função que trata a entrada de teclas especiais (teclas de função e direcionais)
 void Special_keyboard(GLint tecla, int x, int y) {
     //O parâmetro 'tecla' é o código da tecla especial pressionada
-    switch (tecla) {
-        /*Movimentação horizontal para a direita.
-          Essa função move o helicóptero para direita, através da seta para a direita*/
-        case GLUT_KEY_RIGHT:
-            horizontal += 0.8;
-            glutPostRedisplay(); // Atualiza a tela
-            break;
+  switch (tecla) {
+    
+    /*Movimentação horizontal para a direita.
+      Essa função move o helicóptero para direita, através da seta para a direita*/
+    case GLUT_KEY_RIGHT:
+      horizontal += 0.5;
+      pontoMedioX = PX + horizontal;
+      glutPostRedisplay(); // Atualiza a tela
+      break;
 
-        /*Movimentação horizontal para a esquerda
-          Essa função move o helicóptero para direita, através da seta para a esquerda*/
-        case GLUT_KEY_LEFT:
-            horizontal -= 0.8; // Diminui a posição horizontal
-            glutPostRedisplay(); // Atualiza a tela
-            break;
+    /*Movimentação horizontal para a esquerda
+     Essa função move o helicóptero para direita, através da seta para a esquerda*/
+    case GLUT_KEY_LEFT:
+      horizontal -= 0.5; // Diminui a posição horizontal
+      pontoMedioX = PX + horizontal;
+      glutPostRedisplay(); // Atualiza a tela
+      break;
 
-        /*Movimentação vertical para cima
-          Essa função move o helicóptero para cima, usando a seta para cima*/
-        case GLUT_KEY_UP:
-            vertical += 0.8; // Aumenta a posição vertical
-            glutPostRedisplay(); // Atualiza a tela
-            break;
+    /*Movimentação vertical para cima
+      Essa função move o helicóptero para cima, usando a seta para cima*/
+    case GLUT_KEY_UP:
+      vertical += 0.5; // Aumenta a posição vertical
+      pontoMedioY = PY + vertical;
+      glutPostRedisplay(); // Atualiza a tela
+      break;
 
-        /*Movimentação vertical para baixo
-           Essa função move o helicóptero para baixo, usando a seta para baixo*/
-        case GLUT_KEY_DOWN:
-            vertical -= 0.8; // Diminui a posição vertical
-            glutPostRedisplay(); // Atualiza a tela
-            break;
-    }
+    /*Movimentação vertical para baixo
+      Essa função move o helicóptero para baixo, usando a seta para baixo*/
+    case GLUT_KEY_DOWN:
+      vertical -= 0.5; // Diminui a posição vertical
+      pontoMedioY = PY + vertical;
+      glutPostRedisplay(); // Atualiza a tela
+      break;
+    
+    case GLUT_KEY_PAGE_DOWN:
+      escalar>0.1?escalar -= 0.1: 0.1;
+      glutPostRedisplay();
+      break;
+    
+    case GLUT_KEY_PAGE_UP:
+      escalar<1.8?escalar += 0.1: 1.8;
+      glutPostRedisplay();
+      break;
+  }
 }
 
 void DesenhaTexto(char *string) {
