@@ -22,9 +22,11 @@ void Helicoptero();
 void Areia();
 void Sol();
 void Barco();
+void janelasCabine(); 
+void janelasCasco();
+void duto();
 void nuvens();
 void nuvemModel1(float posx, float posy);
-void Casco(float raio, float x, float y, int numSeg);
 
 void Tronco();
 void coco();
@@ -399,57 +401,141 @@ void nuvens(){
 }
 
 //Função responsável pela modelagem do barco
-void Barco() {
-  //Parte superior do barco
+  void Barco() {
+  glPushMatrix();
+  glTranslated(-2, 0, 0);
+    glPushMatrix();
+      //casco do barco
+      glBegin(GL_POLYGON); 
+        glColor3ub(0,0,0); 
+        glVertex2f(-5, -2);
+        glVertex2f(-4.5, -4.2);
+        glVertex2f(0.5, -4.2);
+        glVertex2f(0.5, -2);
+      glEnd();
+
+      glBegin(GL_TRIANGLES);
+        glVertex2f(0, -2);
+        glVertex2f(0, -4.2);
+        glVertex2f(2, -2);
+      glEnd();
+      Circulo(.8, 0.3, -3.4, 100);
+
+      //cabine do barco
+      glBegin(GL_POLYGON);
+        glColor3ub(37, 61, 110);
+        glVertex2f(-3.2, -2);
+        glVertex2f(-3.2, -0.5);
+        glVertex2f(0, -0.5);
+        glVertex2f(0, -2);
+      glEnd();
+
+      //janelas da cabine
+      glPushMatrix();
+        glPushMatrix();
+          glTranslated(0, -0.8, 0);
+          janelasCabine();
+        glPopMatrix();
+
+        glPushMatrix();
+          glTranslated(0, -1.2, 0);
+          janelasCabine();
+        glPopMatrix();
+      glPopMatrix();
+      //fim janelas da cabine
+
+      //janelas no casco
+      glPushMatrix();
+        glPushMatrix();
+        glTranslated(0, -2.7, 0);
+          janelasCasco();
+        glPopMatrix();
+        glPushMatrix();
+        glTranslated(0, -3.5, 0);
+          janelasCasco();
+        glPopMatrix();
+      glPopMatrix();
+      
+      //????
+      glBegin(GL_POLYGON);
+        glColor3ub(203, 204, 206);
+        glVertex2f(-5, -2);
+        glVertex2f(-5.1, -1.8);
+        glVertex2f(2.1, -1.8);
+        glVertex2f(2, -2);
+      glEnd();
+
+      //Duto fumaça
+      glPushMatrix();
+        glPushMatrix();
+          duto();
+        glPopMatrix();
+
+        glPushMatrix();
+          glTranslated(0.74, 0, 0);
+          duto();
+        glPopMatrix();
+
+        glPushMatrix();
+          glTranslated(1.48, 0, 0);
+          duto();
+        glPopMatrix();
+        
+        glPushMatrix();
+          glTranslated(2.22, 0, 0);
+          duto();
+        glPopMatrix();
+      glPopMatrix();
+      //fim Duto fumaça
+    glPopMatrix();
+  glPopMatrix();
+}
+
+void janelasCabine(){
+    glPushMatrix();
+      glBegin(GL_POLYGON); //Iniciando construção de um polígono
+        glColor3ub(254, 254, 155);
+        glVertex2f(-3.2, 0.0);
+        glVertex2f(-3.2, -0.2);
+        glVertex2f(0, -0.2);
+        glVertex2f(0, -0);
+      glEnd();
+
+      for (float i = -0.2; i > -3.2; i-=0.2){
+        glBegin(GL_LINES);
+          glColor3ub(0, 0, 0);
+          glVertex2f(i, 0);
+          glVertex2f(i, -0.2);
+        glEnd();
+      }
+    glPopMatrix();
+}
+
+void janelasCasco(){
+    glPushMatrix();
+    glColor3ub(254, 254, 155);
+      for (float i = 0.6; i > -4; i-=0.15){
+        Circulo(0.05, i, 0, 100);
+      }
+    glPopMatrix();
+}
+
+void duto(){
+  glBegin(GL_POLYGON); //Iniciando construção de um polígono
+    glColor3ub(230, 152, 6); // amarelo
+    glVertex2f(-2.96, -0.5);
+    glVertex2f(-2.46, -0.5);
+    glVertex2f(-2.46, 0);
+    glVertex2f(-2.96, 0);
+  glEnd();
+
   glBegin(GL_POLYGON); //Iniciando construção de um polígono
     glColor3ub(0, 0, 0);
-    glVertex2d(-2.312, -0.677);
-    glVertex2d(-2.380, 0.407);
-    glVertex2d(-1.328, 0.444);
-    glVertex2d(-1.273, -0.635);
+    glVertex2f(-2.96, 0.3);
+    glVertex2f(-2.46, 0.3);
+    glVertex2f(-2.46, 0);
+    glVertex2f(-2.96, 0);
   glEnd();
-
-  //Estrutura do barco
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glColor3ub(232, 247, 253);
-    glVertex2d(-4.5, -3);
-    glVertex2d(-4.643, -0.708);
-    glVertex2d(-0.992, -0.539);
-    glVertex2d(-0.895, -2.764);
-  glEnd();
-
-  //Parte inferior do barco
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glColor3ub(233, 54, 62);
-    glVertex2d(-3.017, -2.772);
-    glVertex2d(-3.120, -1.578);
-    glVertex2d(-2.153, -1.496);
-    glVertex2d(-2.042, -2.708);
-  glEnd();
-
-  //Janelas (Círculos)
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    glColor3ub(179, 232, 255);
-    Circulo(0.35, -3.798, -1.955, 360);
-  glEnd();
-
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-    Circulo(0.35, -1.485, -1.699, 360);
-  glEnd();
-
-  //Casco do barco
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-      glColor3ub(0, 0, 0); // Cor do casco do barco
-      Casco(3.0, -2.0, -2.5, 100);
-  glEnd();
-
-  //Bolhas de ar decorativas
-  glColor3ub(255, 255, 255); // Cor branca para as bolhas
-  Circulo(0.15, -2.1, 0.7, 100); // Bolha 1
-  Circulo(0.1, -1.7, 1.0, 100);  // Bolha 2
-  Circulo(0.1, -2.3, 1.3, 100);  // Bolha 3
-  Circulo(0.12, -1.5, 1.5, 100); // Bolha 4
-  Circulo(0.08, -2.0, 1.7, 100); // Bolha 5
 }
 
 //Função que desenha um círculo ou um semi-círculo
@@ -466,25 +552,6 @@ void Circulo(float raio, float x, float y, int numSeg) {
 
     //Inverte a coordenada y para que o semi-círculo fique virado para cima
     glVertex2f(x + dx, y + dy); // Ponto na borda do círculo ou semi-círculo
-  }
-
-  glEnd();
-}
-
-//Função que desenha o semi-círculo que forma o casco do barco
-void Casco(float raio, float x, float y, int numSeg) {
-  glBegin(GL_POLYGON); //Iniciando construção de um polígono
-
-  //Como é um semi-círculo, desenha de 0 a pi (180 graus)
-  float anguloMax = M_PI;
-
-  for (int i = 0; i <= numSeg; i++) {
-    float angulo = anguloMax * i / numSeg; // Ângulo em radianos
-    float dx = raio * cos(angulo); // Coordenada x
-    float dy = raio * sin(angulo); // Coordenada y
-
-    // Para inverter a boca do semi-círculo, inverta a coordenada y
-    glVertex2f(x + dx, y + (-dy)); // Inverte dy
   }
 
   glEnd();

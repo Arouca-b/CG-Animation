@@ -26,3 +26,6 @@ gcc main.c -o main -lglut -lGL -lGLU -lm
 
 * 02/11/24 
 ![alt text](/imagens/imagem6.png)
+
+* 02/11/24 
+![alt text](/imagens/imagem7.png)
